@@ -24,3 +24,22 @@ class UserLogin(BaseModel):
 
 class LoginResponse(BaseModel):
     email:EmailStr
+
+class VehicleBase(BaseModel):
+    registration_number: str = Field(..., max_length=50, description="Unique Reg No.")
+    name_model: str = Field(..., max_length=100)
+    type: Literal['Van', 'Truck', 'Mini']
+    max_load_capacity_kg: float
+    odometer_km: float = 0.0
+    acquisition_cost: float
+    status: Literal['Available', 'On Trip', 'In Shop', 'Retired'] = 'Available'
+
+
+class VehicleCreate(VehicleBase):
+    pass
+
+class VehicleResponse(VehicleBase):
+    vehicle_id: int
+    updated_at: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
