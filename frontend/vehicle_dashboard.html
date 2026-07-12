@@ -1,182 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TransitOps - Vehicle Registry</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TransitOps — Fuel & Expenses</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans h-screen flex">
+<body class="bg-gray-50 p-8">
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-gray-100 border-r border-gray-300 flex flex-col">
-        <div class="p-6 text-xl font-bold border-b border-gray-300">TransitOps</div>
-        <nav class="flex-1 p-4 space-y-2">
-            <a href="#" class="block p-2 text-gray-600 hover:bg-gray-200 rounded">Dashboard</a>
-            <a href="#" class="block p-2 text-gray-600 hover:bg-gray-200 rounded">Fleet</a>
-            <a href="#" class="block p-2 text-gray-600 hover:bg-gray-200 rounded">Drivers</a>
-            <a href="#" class="block p-2 text-gray-600 hover:bg-gray-200 rounded">Trips</a>
-            <a href="#" class="block p-2 text-gray-900 font-semibold bg-gray-200 rounded">Maintenance (Vehicle Registry)</a>
-            <a href="#" class="block p-2 text-gray-600 hover:bg-gray-200 rounded">Fuel & Expenses</a>
-            <a href="#" class="block p-2 text-gray-600 hover:bg-gray-200 rounded">Analytics</a>
-            <a href="#" class="block p-2 text-gray-600 hover:bg-gray-200 rounded">Settings</a>
-        </nav>
-    </aside>
+  <!-- Action Bar -->
+  <div class="flex justify-end gap-3 mb-6">
+    <button onclick="document.getElementById('fuelModal').classList.remove('hidden')" class="bg-amber-500 text-white px-4 py-2 rounded-lg font-semibold">+ Log Fuel</button>
+    <button onclick="document.getElementById('expenseModal').classList.remove('hidden')" class="bg-amber-500 text-white px-4 py-2 rounded-lg font-semibold">+ Add Expense</button>
+  </div>
 
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col">
-        <!-- Topbar -->
-        <header class="flex justify-between items-center p-4 border-b border-gray-300 bg-white">
-            <input type="text" id="topSearch" onkeyup="filterVehicles()" placeholder="Search..." class="border border-gray-300 rounded px-4 py-1 w-64">
-            <div class="flex items-center space-x-2">
-                <span class="text-sm">Raven K.</span>
-                <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">RK</div>
-            </div>
-        </header>
-
-        <!-- Action Bar -->
-        <div class="p-6">
-            <div class="flex justify-between items-center mb-6">
-                <div class="flex space-x-4">
-                    <select class="border border-gray-300 rounded px-4 py-2 w-32 bg-white">
-                        <option>Type: All</option>
-                    </select>
-                    <select class="border border-gray-300 rounded px-4 py-2 w-32 bg-white">
-                        <option>Status: All</option>
-                    </select>
-                    <!-- Search Input for Filter -->
-                    <input type="text" id="searchInput" onkeyup="filterVehicles()" placeholder="Search reg. no..." class="border border-gray-300 rounded px-4 py-2 w-48">
-                </div>
-                <button onclick="document.getElementById('addModal').classList.remove('hidden')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded shadow font-semibold">
-                    + Add Vehicle
-                </button>
-            </div>
-
-            <!-- Data Table -->
-            <div class="bg-white rounded shadow overflow-hidden border border-gray-200">
-                <table class="min-w-full text-left text-sm">
-                    <thead class="border-b border-gray-200 bg-gray-50 text-gray-500 uppercase text-xs">
-                        <tr>
-                            <th class="px-6 py-3">Reg. No. (Unique)</th>
-                            <th class="px-6 py-3">Name/Mode</th>
-                            <th class="px-6 py-3">Type</th>
-                            <th class="px-6 py-3">Capacity</th>
-                            <th class="px-6 py-3">Odometer</th>
-                            <th class="px-6 py-3">Acq. Cost</th>
-                            <th class="px-6 py-3">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="vehicleTableBody" class="divide-y divide-gray-200">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
-
-    <!-- Add Modal -->
-    <div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-white p-6 rounded shadow-lg w-96">
-            <h2 class="text-xl font-bold mb-4">Add New Vehicle</h2>
-            <form id="addVehicleForm" class="space-y-3">
-                <input type="text" id="regNo" placeholder="Registration No." class="w-full border p-2 rounded" required>
-                <input type="text" id="nameModel" placeholder="Name/Model (e.g. VAN-05)" class="w-full border p-2 rounded" required>
-                <select id="vType" class="w-full border p-2 rounded">
-                    <option value="Van">Van</option>
-                    <option value="Truck">Truck</option>
-                    <option value="Mini">Mini</option>
-                </select>
-                <input type="number" id="capacity" placeholder="Capacity (kg)" class="w-full border p-2 rounded" required>
-                <input type="number" id="odometer" placeholder="Odometer (km)" class="w-full border p-2 rounded" required>
-                <input type="number" id="cost" placeholder="Acq. Cost" class="w-full border p-2 rounded" required>
-                <div class="flex justify-end space-x-2 mt-4">
-                    <button type="button" onclick="document.getElementById('addModal').classList.add('hidden')" class="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
-                </div>
-            </form>
-        </div>
+  <!-- Tables Section -->
+  <div class="space-y-8">
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h3 class="font-bold mb-4">Fuel Logs</h3>
+      <table class="w-full text-sm text-left">
+        <thead class="bg-gray-50 text-gray-400 uppercase">
+          <tr><th class="p-3">Vehicle</th><th>Date</th><th>Liters</th><th>Cost</th></tr>
+        </thead>
+        <tbody id="fuelTableBody" class="divide-y"></tbody>
+      </table>
     </div>
+  </div>
 
-    <script>
-        const API_URL = "http://127.0.0.1:8000/vehicles/";
+  <!-- MODALS -->
+  <!-- Fuel Modal -->
+  <div id="fuelModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center">
+    <form id="fuelForm" class="bg-white p-6 rounded-lg w-80 space-y-3">
+      <h3 class="font-bold">Log Fuel</h3>
+      <input type="number" id="fVehicleId" placeholder="Vehicle ID" class="w-full border p-2 rounded" required>
+      <input type="date" id="fDate" class="w-full border p-2 rounded" required>
+      <input type="number" step="0.01" id="fLiters" placeholder="Liters" class="w-full border p-2 rounded" required>
+      <input type="number" step="0.01" id="fCost" placeholder="Cost" class="w-full border p-2 rounded" required>
+      <button type="submit" class="bg-amber-500 text-white w-full py-2 rounded">Save</button>
+      <button type="button" onclick="document.getElementById('fuelModal').classList.add('hidden')" class="w-full text-gray-500">Cancel</button>
+    </form>
+  </div>
 
-        function getStatusBadge(status) {
-            if(status === 'Available') return `<span class="bg-green-500 text-white px-3 py-1 rounded-full text-xs">Available</span>`;
-            if(status === 'On Trip') return `<span class="bg-blue-500 text-white px-3 py-1 rounded-full text-xs">On Trip</span>`;
-            if(status === 'In Shop') return `<span class="bg-orange-500 text-white px-3 py-1 rounded-full text-xs">In Shop</span>`;
-            if(status === 'Retired') return `<span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs">Retired</span>`;
-            return `<span>${status}</span>`;
-        }
+  <!-- Expense Modal -->
+  <div id="expenseModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center">
+    <form id="expenseForm" class="bg-white p-6 rounded-lg w-80 space-y-3">
+      <h3 class="font-bold">Add Expense</h3>
+      <input type="text" id="eTripId" placeholder="Trip ID" class="w-full border p-2 rounded">
+      <input type="number" id="eVehicleId" placeholder="Vehicle ID" class="w-full border p-2 rounded" required>
+      <select id="eType" class="w-full border p-2 rounded">
+        <option value="Toll">Toll</option>
+        <option value="Maintenance Linked">Maintenance Linked</option>
+        <option value="Other">Other</option>
+      </select>
+      <input type="number" step="0.01" id="eAmount" placeholder="Amount" class="w-full border p-2 rounded" required>
+      <input type="date" id="eDate" class="w-full border p-2 rounded" required>
+      <button type="submit" class="bg-amber-500 text-white w-full py-2 rounded">Save</button>
+      <button type="button" onclick="document.getElementById('expenseModal').classList.add('hidden')" class="w-full text-gray-500">Cancel</button>
+    </form>
+  </div>
 
-        async function loadVehicles() {
-            try {
-                const response = await fetch(API_URL);
-                const vehicles = await response.json();
-                const tbody = document.getElementById('vehicleTableBody');
-                tbody.innerHTML = ''; 
+  <script>
+    const API_BASE = "http://127.0.0.1:8080/fuel-expenses";
 
-                vehicles.forEach(v => {
-                    const row = `
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4">${v.registration_number}</td>
-                            <td class="px-6 py-4">${v.name_model}</td>
-                            <td class="px-6 py-4">${v.type}</td>
-                            <td class="px-6 py-4">${v.max_load_capacity_kg} kg</td>
-                            <td class="px-6 py-4">${v.odometer_km.toLocaleString()}</td>
-                            <td class="px-6 py-4">${v.acquisition_cost.toLocaleString()}</td>
-                            <td class="px-6 py-4">${getStatusBadge(v.status)}</td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
-            } catch (error) {
-                console.error("Error fetching vehicles:", error);
-            }
-        }
+    async function fetchData() {
+      const res = await fetch(`${API_BASE}/fuel`);
+      const logs = await res.json();
+      document.getElementById('fuelTableBody').innerHTML = logs.map(f => 
+        `<tr><td class="p-3">${f.vehicle_id}</td><td>${f.date}</td><td>${f.liters_filled}</td><td>${f.fuel_cost}</td></tr>`
+      ).join('');
+    }
 
-        // Updated Filter Function: Works for both search inputs
-        function filterVehicles() {
-            const searchTerm = (document.getElementById('searchInput').value || document.getElementById('topSearch').value).toLowerCase();
-            const rows = document.querySelectorAll('#vehicleTableBody tr');
-            
-            rows.forEach(row => {
-                const regNo = row.cells[0].textContent.toLowerCase();
-                row.style.display = regNo.includes(searchTerm) ? "" : "none";
-            });
-        }
+    // Submit Fuel
+    document.getElementById('fuelForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await fetch(`${API_BASE}/fuel`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          vehicle_id: parseInt(document.getElementById('fVehicleId').value),
+          date: document.getElementById('fDate').value,
+          liters_filled: parseFloat(document.getElementById('fLiters').value),
+          fuel_cost: parseFloat(document.getElementById('fCost').value)
+        })
+      });
+      location.reload();
+    });
 
-        document.getElementById('addVehicleForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const newVehicle = {
-                registration_number: document.getElementById('regNo').value,
-                name_model: document.getElementById('nameModel').value,
-                type: document.getElementById('vType').value,
-                max_load_capacity_kg: parseFloat(document.getElementById('capacity').value),
-                odometer_km: parseFloat(document.getElementById('odometer').value),
-                acquisition_cost: parseFloat(document.getElementById('cost').value),
-                status: "Available"
-            };
+    // Submit Expense
+    document.getElementById('expenseForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await fetch(`${API_BASE}/expenses`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          trip_id: document.getElementById('eTripId').value || null,
+          vehicle_id: parseInt(document.getElementById('eVehicleId').value),
+          expense_type: document.getElementById('eType').value,
+          amount: parseFloat(document.getElementById('eAmount').value),
+          date: document.getElementById('eDate').value
+        })
+      });
+      location.reload();
+    });
 
-            try {
-                const response = await fetch(API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newVehicle)
-                });
-
-                if(response.ok) {
-                    document.getElementById('addModal').classList.add('hidden');
-                    document.getElementById('addVehicleForm').reset();
-                    loadVehicles();
-                } else {
-                    const err = await response.json();
-                    alert("Error: " + err.detail);
-                }
-            } catch (error) {
-                console.error("Error adding vehicle:", error);
-            }
-        });
-
-        loadVehicles();
-    </script>
+    fetchData();
+  </script>
 </body>
 </html>

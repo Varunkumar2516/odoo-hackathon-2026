@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Drivers & Safety - TransitOps</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">Drivers & Safety Profiles</h1>
+            <button onclick="document.getElementById('driverModal').classList.remove('hidden')" 
+                    class="bg-amber-500 text-white px-4 py-2 rounded-lg font-semibold">+ Add Driver</button>
+        </div>
+
+        <!-- Table -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
+                    <tr>
+                        <th class="p-4">Driver</th>
+                        <th>License No.</th>
+                        <th>Category</th>
+                        <th>Expiry</th>
+                        <th>Contact</th>
+                        <th>Safety</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="driverTableBody" class="divide-y">
+                    <!-- Data here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Driver Modal -->
+    <div id="driverModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center">
+        <form id="driverForm" class="bg-white p-6 rounded-lg w-96 space-y-3">
+            <h2 class="font-bold text-lg">Add New Driver</h2>
+            <input type="text" id="dName" placeholder="Full Name" class="w-full border p-2 rounded" required>
+            <input type="text" id="dLicNo" placeholder="License Number" class="w-full border p-2 rounded" required>
+            <select id="dCat" class="w-full border p-2 rounded">
+                <option value="LMV">LMV</option>
+                <option value="HMV">HMV</option>
+            </select>
+            <input type="date" id="dExpiry" class="w-full border p-2 rounded" required>
+            <input type="text" id="dContact" placeholder="Contact" class="w-full border p-2 rounded" required>
+            <button type="submit" class="w-full bg-amber-500 text-white py-2 rounded">Save Driver</button>
+            <button type="button" onclick="document.getElementById('driverModal').classList.add('hidden')" class="w-full text-gray-500">Cancel</button>
+        </form>
+    </div>
+
+    <script>
+        const API = "http://127.0.0.1:8080";
+
+        async function loadDrivers() {
+            const res = await fetch(`${API}/drivers/`);
+            const data = await res.json();
+            const tbody = document.getElementById('driverTableBody');
+            
+            tbody.innerHTML = data.map(d => `
+                <tr class="hover:bg-gray-50">
+                    <td class="p-4 font-semibold">${d.name}</td>
+                    <td>${d.license_number}</td>
+                    <td>${d.license_category}</td>
+                    <td>${d.license_expiry_date}</td>
+                    <td>${d.contact_number}</td>
+                    <td>${d.safety_score}%</td>
+                    <td><span class="px-3 py-1 rounded-full text-xs text-white ${getStatusColor(d.status)}">${d.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function getStatusColor(status) {
+            if(status === 'Available') return 'bg-green-500';
+            if(status === 'Suspended') return 'bg-orange-500';
+            if(status === 'On Trip') return 'bg-blue-500';
+            return 'bg-gray-500';
+        }
+
+        document.getElementById('driverForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('dName').value,
+                license_number: document.getElementById('dLicNo').value,
+                license_category: document.getElementById('dCat').value,
+                license_expiry_date: document.getElementById('dExpiry').value,
+                contact_number: document.getElementById('dContact').value
+            };
+            
+            await fetch(`${API}/drivers/`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            location.reload();
+        });
+
+        loadDrivers();
+    </script>
+</body>
+</html>

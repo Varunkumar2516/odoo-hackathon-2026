@@ -78,16 +78,15 @@ class Trip(Base):
     cargo_weight_kg = Column(Float, nullable=False)
     planned_distance_km = Column(Float, nullable=False)
     status = Column(String(30), nullable=False, default='Draft')
-    created_at = Column(DateTime, default=datetime.utcnow) # FIXED
+    created_at = Column(DateTime, default=datetime.utcnow)
 
     __table_args__ = (
-        CheckConstraint(status.in_(['Draft', 'Dispatched', 'Completed', 'Cancelled']), name='check_valid_trip_status'), # FIXED
+        CheckConstraint(status.in_(['Draft', 'Dispatched', 'Completed', 'Cancelled']), name='check_valid_trip_status'),
     )
 
-    # Relationships
     vehicle = relationship("Vehicle", back_populates="trips")
     driver = relationship("Driver", back_populates="trips")
-
+    
 
 class MaintenanceLog(Base):
     __tablename__ = 'maintenance_logs'

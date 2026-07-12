@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 
 from backend.schemamodels import UserCreate
 
-from .routes import user, vehicle, maintenance
+from .routes import user, vehicle, maintenance, fuel_expense, trips, drivers, analytics
 from fastapi.middleware.cors import CORSMiddleware
 
 # running statement to Create all MOdels From SQLalchemy 
@@ -41,6 +41,14 @@ app.include_router(user.router)
 app.include_router(vehicle.router)
 
 app.include_router(maintenance.router)
+
+app.include_router(fuel_expense.router)
+
+app.include_router(trips.router)
+
+app.include_router(drivers.router)
+
+app.include_router(drivers.analytics)
 
 @app.get('/')
 def home():

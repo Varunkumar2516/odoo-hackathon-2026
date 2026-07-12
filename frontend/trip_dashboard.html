@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trip Dispatcher</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-6xl mx-auto grid grid-cols-2 gap-8">
+        
+        <!-- TRIP FORM -->
+        <div class="bg-white p-6 rounded-xl shadow border">
+            <h2 class="font-bold mb-4">CREATE TRIP</h2>
+            <form id="tripForm" class="space-y-3">
+                <input type="text" id="tId" placeholder="Trip ID (e.g. TR001)" class="w-full border p-2 rounded" required>
+                <input type="text" id="source" placeholder="Source" class="w-full border p-2 rounded" required>
+                <input type="text" id="dest" placeholder="Destination" class="w-full border p-2 rounded" required>
+                
+                <!-- Dropdowns -->
+                <select id="vSelect" onchange="validateCapacity()" class="w-full border p-2 rounded" required>
+                    <option value="">Select Vehicle</option>
+                </select>
+                
+                <select id="dSelect" class="w-full border p-2 rounded" required>
+                    <option value="">Select Driver</option>
+                </select>
+                
+                <input type="number" id="weight" placeholder="Cargo Weight (kg)" class="w-full border p-2 rounded" required oninput="validateCapacity()">
+                <input type="number" id="dist" placeholder="Distance (km)" class="w-full border p-2 rounded" required>
+
+                <div id="errorBox" class="hidden p-3 bg-red-50 text-red-700 text-sm border border-red-200 rounded">
+                    <p id="errorMsg"></p>
+                </div>
+
+                <button type="submit" id="dispatchBtn" class="bg-amber-600 text-white w-full py-2 rounded font-bold">Dispatch</button>
+            </form>
+        </div>
+
+        <!-- LIVE BOARD -->
+        <div class="bg-white p-6 rounded-xl shadow border">
+            <h2 class="font-bold mb-4">LIVE BOARD</h2>
+            <div id="liveBoard" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <script>
+        const API = "http://127.0.0.1:8080";
+        let vehiclesData = []; // Store vehicles to check capacity
+
+        async function loadDropdowns() {
+            // Fetch Vehicles
+            const vRes = await fetch(`${API}/vehicles/`);
+            vehiclesData = await vRes.json();
+            const vSelect = document.getElementById('vSelect');
+            vehiclesData.forEach(v => {
+                vSelect.innerHTML += `<option value="${v.vehicle_id}" data-cap="${v.max_load_capacity_kg}">${v.name_model} (${v.max_load_capacity_kg}kg)</option>`;
+            });
+
+            // Fetch Drivers
+            const dRes = await fetch(`${API}/drivers/`);
+            const drivers = await dRes.json();
+            const dSelect = document.getElementById('dSelect');
+            drivers.forEach(d => {
+                dSelect.innerHTML += `<option value="${d.driver_id}">${d.first_name} ${d.last_name}</option>`;
+            });
+        }
+
+        function validateCapacity() {
+            const weight = parseFloat(document.getElementById('weight').value) || 0;
+            const vSelect = document.getElementById('vSelect');
+            const selectedOption = vSelect.options[vSelect.selectedIndex];
+            const limit = parseFloat(selectedOption.getAttribute('data-cap')) || 0;
+            
+            const errorBox = document.getElementById('errorBox');
+            const btn = document.getElementById('dispatchBtn');
+
+            if(weight > limit && limit > 0) {
+                errorBox.classList.remove('hidden');
+                document.getElementById('errorMsg').innerText = `Capacity exceeded by ${weight - limit} kg - dispatch blocked`;
+                btn.disabled = true;
+                btn.className = "bg-gray-400 text-white w-full py-2 rounded font-bold cursor-not-allowed";
+            } else {
+                errorBox.classList.add('hidden');
+                btn.disabled = false;
+                btn.className = "bg-amber-600 text-white w-full py-2 rounded font-bold";
+            }
+        }
+
+        // Initialize
+        window.onload = loadDropdowns;
+    </script>
+</body>
+</html>

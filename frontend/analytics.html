@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reports & Analytics - TransitOps</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-50 p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-2xl font-bold mb-8">Reports & Analytics</h1>
+
+        <!-- KPI Cards -->
+        <div id="kpiCards" class="grid grid-cols-4 gap-6 mb-8">
+            <!-- Cards will be populated here -->
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="font-bold mb-4 text-sm text-slate-500 uppercase">Monthly Revenue</h3>
+                <canvas id="revenueChart"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="font-bold mb-4 text-sm text-slate-500 uppercase">Top Costliest Vehicles</h3>
+                <div id="vehicleCosts" class="space-y-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = "http://127.0.0.1:8080/analytics/dashboard";
+
+        async function loadAnalytics() {
+            const res = await fetch(API);
+            const data = await res.json();
+            
+            // 1. Populate KPIs
+            const kpiContainer = document.getElementById('kpiCards');
+            kpiContainer.innerHTML = `
+                <div class="bg-white p-6 rounded-2xl border shadow-sm"><p class="text-xs text-gray-400">FUEL EFFICIENCY</p><h3 class="text-xl font-bold">${data.summary.fuel_efficiency}</h3></div>
+                <div class="bg-white p-6 rounded-2xl border shadow-sm"><p class="text-xs text-gray-400">FLEET UTILIZATION</p><h3 class="text-xl font-bold">${data.summary.fleet_utilization}</h3></div>
+                <div class="bg-white p-6 rounded-2xl border shadow-sm"><p class="text-xs text-gray-400">OPERATIONAL COST</p><h3 class="text-xl font-bold">${data.summary.operational_cost}</h3></div>
+                <div class="bg-white p-6 rounded-2xl border shadow-sm"><p class="text-xs text-gray-400">VEHICLE ROI</p><h3 class="text-xl font-bold">${data.summary.vehicle_roi}</h3></div>
+            `;
+
+            // 2. Chart
+            new Chart(document.getElementById('revenueChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{ label: 'Revenue', data: data.monthly_revenue, backgroundColor: '#3b82f6' }]
+                }
+            });
+
+            // 3. Costliest Vehicles Bars
+            const costContainer = document.getElementById('vehicleCosts');
+            data.top_costly_vehicles.forEach(v => {
+                costContainer.innerHTML += `
+                    <div>
+                        <div class="flex justify-between text-sm mb-1"><span>${v.vehicle_name}</span><span>${v.cost}</span></div>
+                        <div class="w-full bg-gray-100 rounded-full h-2"><div class="bg-amber-500 h-2 rounded-full" style="width: 70%"></div></div>
+                    </div>
+                `;
+            });
+        }
+
+        window.onload = loadAnalytics;
+    </script>
+</body>
+</html>
