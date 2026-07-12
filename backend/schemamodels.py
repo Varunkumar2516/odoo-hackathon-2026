@@ -8,7 +8,7 @@ class UserCreate(BaseModel):
     name:str
     email:EmailStr
     password:str 
-
+    role: str
 
 class UserResponse(BaseModel):
     id:int
@@ -24,3 +24,19 @@ class UserLogin(BaseModel):
 
 class LoginResponse(BaseModel):
     email:EmailStr
+
+
+
+class TokenData(BaseModel):
+    user_id : int 
+    type : Literal["access", "refresh","email-verify",'reset-password']
+    exp : datetime
+    iat : datetime 
+    jti : str
+
+class CurrentUser(BaseModel):
+    id:int 
+    name:str
+
+class refreshToken(BaseModel):
+    refresh_token : str

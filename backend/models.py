@@ -6,18 +6,18 @@ from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
 from .database import Base
 
-class User(Base):
+class UserModel(Base):
     __tablename__ = 'users'
 
     user_id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
-    password_hash = Column(String(255), nullable=False)
+    password = Column(String(255), nullable=False)
     role = Column(String(30), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow) # FIXED
 
     __table_args__ = (
-        CheckConstraint(role.in_(['Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst']), name='check_valid_role'), # FIXED
+        CheckConstraint(role.in_(['Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst','admin']), name='check_valid_role'), # FIXED
     )
 
 
