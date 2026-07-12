@@ -1,14 +1,14 @@
 from fastapi import Depends, APIRouter, status, HTTPException, Response,Request
 from sqlalchemy.orm import Session
 from typing import List
-from backend.database import get_db
-from backend.schemamodels import UserCreate, UserResponse,UserLogin,LoginResponse
-from backend import models
+from database.database import get_db
+from schemamodels import UserCreate, UserResponse,UserLogin,LoginResponse
+import models
 
 
 from fastapi.responses import RedirectResponse
 from fastapi.responses import HTMLResponse
-from backend.utils import hash,VerifyHash
+from utils import hash,VerifyHash
 router = APIRouter(
     tags=['User']
 )
