@@ -1,31 +1,8 @@
-# from pydantic import BaseModel , EmailStr , Field,ConfigDict
+from pydantic import BaseModel , EmailStr , Field,ConfigDict
 # import re
-# from datetime import datetime
-# from typing import Optional,Literal 
+from datetime import datetime
+from typing import Optional,Literal 
 # from sqlalchemy.dialects.postgresql import UUID
-
-# class UserCreate(BaseModel):
-#     name:str
-#     email:EmailStr
-#     password:str 
-
-
-# class UserResponse(BaseModel):
-#     id:int
-#     name:str
-#     email:EmailStr 
-    
-#     model_config = ConfigDict(from_attributes=True)
-
-# class UserLogin(BaseModel):
-#     email:EmailStr
-#     password:str
-
-
-# class LoginResponse(BaseModel):
-#     email:EmailStr
-
-# =================================================
 
 from pydantic import BaseModel
 from datetime import date
@@ -62,6 +39,8 @@ class UserCreate(BaseModel):
     email: str
     password: str
     role: str  # Fleet Manager, Driver, Safety Officer, Financial Analyst
+    name:str
+    
 
 class UserResponse(BaseModel):
     id: int
@@ -76,5 +55,20 @@ class UserLogin(BaseModel):
     password: str
 
 class LoginResponse(BaseModel):
-    access_token: str
-    token_type: str
+    email:EmailStr
+
+
+
+class TokenData(BaseModel):
+    user_id : int 
+    type : Literal["access", "refresh","email-verify",'reset-password']
+    exp : datetime
+    iat : datetime 
+    jti : str
+
+class CurrentUser(BaseModel):
+    id:int 
+    name:str
+
+class refreshToken(BaseModel):
+    refresh_token : str

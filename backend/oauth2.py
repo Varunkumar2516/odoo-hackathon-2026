@@ -4,8 +4,7 @@ from dotenv import load_dotenv
 # Load variables from .env into the system environment
 from pathlib import Path
 import os
-import schemamodels
-
+from backend import schemamodels, models
 from fastapi import Depends,status,HTTPException,Request
 
 # for extracting the token from authorization Request
@@ -15,7 +14,6 @@ from fastapi.security import OAuth2PasswordBearer,HTTPBearer
 from sqlalchemy.orm import Session
 from .database import get_db
 
-from .import models,schema
 
 from datetime import datetime,timedelta,timezone
 from uuid import uuid4
@@ -48,7 +46,7 @@ def create_token(user_id :int ,token_type,minute,secret):
     
     return (jwt.encode(to_encode,
                       secret,
-                      algorithm=ALGORITHM),schema.TokenData(**to_encode))
+                      algorithm=ALGORITHM),schemamodels.TokenData(**to_encode))
 
 
 
@@ -89,7 +87,7 @@ def verify_token(token:str , token_type : str , SECRET_KEY):
         if id is None or type != token_type:
             raise credentials_exception
         
-        token_data = schema.TokenData(**payload)
+        token_data = schemamodels.TokenData(**payload)
 
         return token_data
     except JWTError as e:
@@ -137,7 +135,7 @@ def get_current_user(request : Request ,db:Session = Depends(get_db)):
         raise credentials_exception
      token_data = verify_access_token(token)
 
-     current_user = db.query(models.UserModel).filter(models.UserModel.id == token_data.user_id).first()
+     current_user = db.query(models.UserModel).filter(models.UserModel.user_id == token_data.user_id).first()
      if not current_user:
          raise credentials_exception
      return current_user
