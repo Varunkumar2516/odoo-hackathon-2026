@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TransitOps - Vehicle Registry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans h-screen flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-100 border-r border-gray-300 flex flex-col">
+        <div class="p-6 text-xl font-bold border-b border-gray-300">TransitOps</div>
+        <nav class="flex-1 p-4 space-y-2">
+            <a href="#" class="block p-2 text-gray-600 hover:bg-gray-200 rounded">Dashboard</a>
+            <a href="#" class="block p-2 text-gray-600 hover:bg-gray-200 rounded">Fleet</a>
+            <a href="#" class="block p-2 text-gray-600 hover:bg-gray-200 rounded">Drivers</a>
+            <a href="#" class="block p-2 text-gray-600 hover:bg-gray-200 rounded">Trips</a>
+            <a href="#" class="block p-2 text-gray-900 font-semibold bg-gray-200 rounded">Maintenance (Vehicle Registry)</a>
+            <a href="#" class="block p-2 text-gray-600 hover:bg-gray-200 rounded">Fuel & Expenses</a>
+            <a href="#" class="block p-2 text-gray-600 hover:bg-gray-200 rounded">Analytics</a>
+            <a href="#" class="block p-2 text-gray-600 hover:bg-gray-200 rounded">Settings</a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col">
+        <!-- Topbar -->
+        <header class="flex justify-between items-center p-4 border-b border-gray-300 bg-white">
+            <input type="text" id="topSearch" onkeyup="filterVehicles()" placeholder="Search..." class="border border-gray-300 rounded px-4 py-1 w-64">
+            <div class="flex items-center space-x-2">
+                <span class="text-sm">Raven K.</span>
+                <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">RK</div>
+            </div>
+        </header>
+
+        <!-- Action Bar -->
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex space-x-4">
+                    <select class="border border-gray-300 rounded px-4 py-2 w-32 bg-white">
+                        <option>Type: All</option>
+                    </select>
+                    <select class="border border-gray-300 rounded px-4 py-2 w-32 bg-white">
+                        <option>Status: All</option>
+                    </select>
+                    <!-- Search Input for Filter -->
+                    <input type="text" id="searchInput" onkeyup="filterVehicles()" placeholder="Search reg. no..." class="border border-gray-300 rounded px-4 py-2 w-48">
+                </div>
+                <button onclick="document.getElementById('addModal').classList.remove('hidden')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded shadow font-semibold">
+                    + Add Vehicle
+                </button>
+            </div>
+
+            <!-- Data Table -->
+            <div class="bg-white rounded shadow overflow-hidden border border-gray-200">
+                <table class="min-w-full text-left text-sm">
+                    <thead class="border-b border-gray-200 bg-gray-50 text-gray-500 uppercase text-xs">
+                        <tr>
+                            <th class="px-6 py-3">Reg. No. (Unique)</th>
+                            <th class="px-6 py-3">Name/Mode</th>
+                            <th class="px-6 py-3">Type</th>
+                            <th class="px-6 py-3">Capacity</th>
+                            <th class="px-6 py-3">Odometer</th>
+                            <th class="px-6 py-3">Acq. Cost</th>
+                            <th class="px-6 py-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vehicleTableBody" class="divide-y divide-gray-200">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Modal -->
+    <div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded shadow-lg w-96">
+            <h2 class="text-xl font-bold mb-4">Add New Vehicle</h2>
+            <form id="addVehicleForm" class="space-y-3">
+                <input type="text" id="regNo" placeholder="Registration No." class="w-full border p-2 rounded" required>
+                <input type="text" id="nameModel" placeholder="Name/Model (e.g. VAN-05)" class="w-full border p-2 rounded" required>
+                <select id="vType" class="w-full border p-2 rounded">
+                    <option value="Van">Van</option>
+                    <option value="Truck">Truck</option>
+                    <option value="Mini">Mini</option>
+                </select>
+                <input type="number" id="capacity" placeholder="Capacity (kg)" class="w-full border p-2 rounded" required>
+                <input type="number" id="odometer" placeholder="Odometer (km)" class="w-full border p-2 rounded" required>
+                <input type="number" id="cost" placeholder="Acq. Cost" class="w-full border p-2 rounded" required>
+                <div class="flex justify-end space-x-2 mt-4">
+                    <button type="button" onclick="document.getElementById('addModal').classList.add('hidden')" class="bg-gray-300 px-4 py-2 rounded">Cancel</button>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8000/vehicles/";
+
+        function getStatusBadge(status) {
+            if(status === 'Available') return `<span class="bg-green-500 text-white px-3 py-1 rounded-full text-xs">Available</span>`;
+            if(status === 'On Trip') return `<span class="bg-blue-500 text-white px-3 py-1 rounded-full text-xs">On Trip</span>`;
+            if(status === 'In Shop') return `<span class="bg-orange-500 text-white px-3 py-1 rounded-full text-xs">In Shop</span>`;
+            if(status === 'Retired') return `<span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs">Retired</span>`;
+            return `<span>${status}</span>`;
+        }
+
+        async function loadVehicles() {
+            try {
+                const response = await fetch(API_URL);
+                const vehicles = await response.json();
+                const tbody = document.getElementById('vehicleTableBody');
+                tbody.innerHTML = ''; 
+
+                vehicles.forEach(v => {
+                    const row = `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">${v.registration_number}</td>
+                            <td class="px-6 py-4">${v.name_model}</td>
+                            <td class="px-6 py-4">${v.type}</td>
+                            <td class="px-6 py-4">${v.max_load_capacity_kg} kg</td>
+                            <td class="px-6 py-4">${v.odometer_km.toLocaleString()}</td>
+                            <td class="px-6 py-4">${v.acquisition_cost.toLocaleString()}</td>
+                            <td class="px-6 py-4">${getStatusBadge(v.status)}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("Error fetching vehicles:", error);
+            }
+        }
+
+        // Updated Filter Function: Works for both search inputs
+        function filterVehicles() {
+            const searchTerm = (document.getElementById('searchInput').value || document.getElementById('topSearch').value).toLowerCase();
+            const rows = document.querySelectorAll('#vehicleTableBody tr');
+            
+            rows.forEach(row => {
+                const regNo = row.cells[0].textContent.toLowerCase();
+                row.style.display = regNo.includes(searchTerm) ? "" : "none";
+            });
+        }
+
+        document.getElementById('addVehicleForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newVehicle = {
+                registration_number: document.getElementById('regNo').value,
+                name_model: document.getElementById('nameModel').value,
+                type: document.getElementById('vType').value,
+                max_load_capacity_kg: parseFloat(document.getElementById('capacity').value),
+                odometer_km: parseFloat(document.getElementById('odometer').value),
+                acquisition_cost: parseFloat(document.getElementById('cost').value),
+                status: "Available"
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newVehicle)
+                });
+
+                if(response.ok) {
+                    document.getElementById('addModal').classList.add('hidden');
+                    document.getElementById('addVehicleForm').reset();
+                    loadVehicles();
+                } else {
+                    const err = await response.json();
+                    alert("Error: " + err.detail);
+                }
+            } catch (error) {
+                console.error("Error adding vehicle:", error);
+            }
+        });
+
+        loadVehicles();
+    </script>
+</body>
+</html>

@@ -3,6 +3,7 @@ import re
 from datetime import datetime
 from typing import Optional,Literal 
 from sqlalchemy.dialects.postgresql import UUID
+from datetime import date
 
 class UserCreate(BaseModel):
     name:str
@@ -43,3 +44,16 @@ class VehicleResponse(VehicleBase):
     updated_at: datetime
     
     model_config = ConfigDict(from_attributes=True)
+    
+class MaintenanceLogCreate(BaseModel):
+    vehicle_id: int
+    service_type: str
+    cost: float
+    service_date: date
+    status: str
+    
+class MaintenanceLog(MaintenanceLogCreate):
+    maintenance_id: int 
+
+    class Config:
+        from_attributes = True 

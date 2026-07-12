@@ -23,7 +23,9 @@ SQLALCHEMY_DB_URL = os.getenv('POSTGRE_SQL_URL')
 if not SQLALCHEMY_DB_URL:
     print("Error with Importing SQL string ")
 engine = create_engine(SQLALCHEMY_DB_URL,
-                        connect_args={"connect_timeout": 10} )
+                        connect_args={"check_same_thread": False} )
+# engine = create_engine(SQLALCHEMY_DB_URL,
+#                        connect_args={"connect_timeout": 10} )
 
 
 SessionLocal = sessionmaker(

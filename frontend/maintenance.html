@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TransitOps | Maintenance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>.glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }</style>
+</head>
+<body class="bg-[#fcfbf7] flex h-screen">
+    <aside class="w-64 bg-white border-r p-6">
+        <h1 class="text-xl font-bold mb-8">TransitOps</h1>
+        <nav class="space-y-4">
+            <a href="dashboard.html" class="block p-2 text-gray-600 hover:bg-gray-100 rounded">Dashboard</a>
+            <a href="maintenance.html" class="block p-2 bg-amber-100 rounded font-bold text-amber-900">Maintenance</a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-8">
+        <h2 class="text-3xl font-light mb-8">Maintenance Log</h2>
+        <div class="grid grid-cols-12 gap-8">
+            <!-- Form -->
+            <div class="col-span-4 glass-card p-6 rounded-3xl border border-gray-200">
+                <h3 class="font-bold mb-4">LOG SERVICE RECORD</h3>
+                <form id="maintenanceForm" class="space-y-3">
+                    <select id="vehicleSelect" class="w-full p-3 rounded-xl bg-gray-50 border-none outline-none" required>
+                        <option value="">Select Vehicle</option>
+                    </select>
+                    <input type="text" id="serviceType" placeholder="Service Type" class="w-full p-3 rounded-xl bg-gray-50 border-none outline-none" required>
+                    <input type="number" id="cost" placeholder="Cost" class="w-full p-3 rounded-xl bg-gray-50 border-none outline-none" required>
+                    <input type="date" id="serviceDate" class="w-full p-3 rounded-xl bg-gray-50 border-none outline-none" required>
+                    <button type="submit" class="w-full bg-amber-500 text-white py-3 rounded-xl font-bold hover:bg-amber-600 transition-all">Save Record</button>
+                </form>
+            </div>
+            <!-- History Table -->
+            <div class="col-span-8 glass-card p-6 rounded-3xl border border-gray-200">
+                <table class="w-full text-left text-sm">
+                    <thead><tr class="text-gray-400 uppercase text-[10px]"><th>Vehicle ID</th><th>Service</th><th>Cost</th><th>Status</th></tr></thead>
+                    <tbody id="maintTableBody" class="divide-y"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 1. Vehicles Load karo Dropdown ke liye
+        async function loadVehiclesDropdown() {
+            const res = await fetch("http://127.0.0.1:8000/vehicles/");
+            const vehicles = await res.json();
+            const select = document.getElementById('vehicleSelect');
+            vehicles.forEach(v => {
+                select.innerHTML += `<option value="${v.vehicle_id}">${v.registration_number}</option>`;
+            });
+        }
+
+        // 2. Logs Load karo Table mein
+        async function loadLogs() {
+            const res = await fetch("http://127.0.0.1:8000/maintenance/");
+            const logs = await res.json();
+            document.getElementById('maintTableBody').innerHTML = logs.map(l => `
+                <tr><td class="py-4">${l.vehicle_id}</td><td class="py-4">${l.service_type}</td><td class="py-4">${l.cost}</td><td class="py-4">${l.status}</td></tr>
+            `).join('');
+        }
+
+        // 3. Form Submit
+        document.getElementById('maintenanceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                vehicle_id: parseInt(document.getElementById('vehicleSelect').value),
+                service_type: document.getElementById('serviceType').value,
+                cost: parseFloat(document.getElementById('cost').value),
+                service_date: document.getElementById('serviceDate').value,
+                status: "Active"
+            };
+            await fetch("http://127.0.0.1:8000/maintenance/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+            alert("Saved!");
+            loadLogs();
+        });
+
+        loadVehiclesDropdown();
+        loadLogs();
+    </script>
+</body>
+</html>
