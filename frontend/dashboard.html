@@ -118,19 +118,23 @@
       
       <!-- Premium Navigation -->
       <nav class="px-4 py-6 space-y-1" aria-label="Main navigation">
-        <a href="#" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm">
+        <a href="dashboard.html" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm"
+        >
           <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
           <span data-template-id="nav-dashboard" class="canva-text">Dashboard</span>
         </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
+        <a href="users.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
+        >
           <i data-lucide="users" class="w-4 h-4"></i>
           <span data-template-id="nav-users" class="canva-text">Users</span>
         </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
+        <a href="drivers.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
+        >
           <i data-lucide="user-check" class="w-4 h-4"></i>
           <span data-template-id="nav-drivers" class="canva-text">Drivers</span>
         </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
+        <a href="vehicles.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
+        >
           <i data-lucide="truck" class="w-4 h-4"></i>
           <span data-template-id="nav-vehicles" class="canva-text">Vehicles</span>
         </a> 
@@ -427,21 +431,31 @@
     const user = await res.json();
 
     console.log(user);
-
+     
+    return true
 }
 
-    checkAuth();
-    // Initialize premium Lucide Icons
+    window.addEventListener("DOMContentLoaded", async () => {
+
+    const ok = await checkAuth();
+
+    if (!ok) return;
+
     lucide.createIcons();
 
-    // Small interaction simulation for UI polishing
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => {
-      item.addEventListener('click', (e) => {
-        // Prevent default only if active router links are handled in app logic
-        navItems.forEach(n => n.classList.remove('active'));
-        item.classList.add('active');
-      });
-    });
+
+});
+
+    const currentPage = window.location.pathname.split("/").pop();
+
+    document.querySelectorAll(".nav-item").forEach(item => {
+      item.classList.remove("active");
+
+      const href = item.getAttribute("href");
+
+      if (href === currentPage) {
+          item.classList.add("active");
+    }
+});
   </script>
 </body>

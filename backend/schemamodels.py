@@ -8,6 +8,31 @@ from pydantic import BaseModel
 from datetime import date
 from typing import Optional
 
+from pydantic import BaseModel
+
+class DriverBase(BaseModel):
+    name: str
+    license_number: str
+    license_category: str
+    license_expiry_date: date
+    contact_number: str
+    safety_score: float = 100.0
+    status: str = "Available"
+
+
+class DriverCreate(DriverBase):
+    pass
+
+
+class DriverUpdate(DriverBase):
+    pass
+
+
+class DriverResponse(DriverBase):
+    driver_id: int
+
+    class Config:
+        from_attributes = True
 class VehicleCreate(BaseModel):
     reg_number: str
     model: str

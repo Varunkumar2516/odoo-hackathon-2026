@@ -118,3 +118,6 @@ def me(access_token: str = Cookie(None), db: Session = Depends(get_db)):
         "id": user.user_id,
         "email": user.email,
     }
+
+
+    

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TransitOps — Fleet Registry</title>
+  
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  
+  <!-- Premium Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body { 
+      font-family: 'Inter', sans-serif; 
+      background-color: #F8FAFC;
+    }
+    h1, h2, h3, .font-display {
+      font-family: 'Outfit', sans-serif;
+    }
+    
+    /* Sidebar active navigation styling */
+    .nav-item { 
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+    }
+    .nav-item:hover { 
+      background: #F1F5F9; 
+      color: #0F172A; 
+      padding-left: 1rem;
+    }
+    .nav-item.active { 
+      background: linear-gradient(90deg, #E0F2FE 0%, #F0F9FF 100%); 
+      color: #0288D1; 
+      font-weight: 600; 
+      border-left: 4px solid #0288D1;
+      padding-left: 1rem;
+    }
+
+    /* Premium card & modal structures */
+    .premium-card {
+      background: #ffffff;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
+    }
+    .modal-backdrop {
+      background-color: rgba(15, 23, 42, 0.3);
+      backdrop-filter: blur(4px);
+    }
+
+    /* Floating feedback notifications */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 0.75rem 1.5rem;
+      background: #333;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      z-index: 2000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      animation: slideIn 0.2s ease-out;
+    }
+    .toast.error { background: #E53E3E; }
+    .toast.success { background: #38A169; }
+
+    @keyframes slideIn {
+      from { transform: translateY(1rem); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex w-full text-slate-700">
+
+  <!-- Authentication Guard Script -->
+  <script>
+    (function() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = './index.html';
+      }
+    })();
+  </script>
+
+  <!-- Sidebar Component -->
+  <aside class="canva-sidebar w-64 min-h-screen flex-shrink-0 border-r border-slate-200 bg-white flex flex-col justify-between">
+    <div>
+      <!-- Brand Area -->
+      <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-600 to-emerald-500 flex items-center justify-center text-white font-bold text-lg">T</div>
+        <h1 class="text-xl font-bold tracking-tight text-slate-900">TransitOps</h1>
+      </div>
+      
+      <!-- Premium Navigation -->
+      <nav class="px-4 py-6 space-y-1" aria-label="Main navigation">
+        <a href="dashboard.html" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm"
+        >
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span data-template-id="nav-dashboard" class="canva-text">Dashboard</span>
+        </a> 
+        <a href="users.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
+        >
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span data-template-id="nav-users" class="canva-text">Users</span>
+        </a> 
+        <a href="drivers.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
+        >
+          <i data-lucide="user-check" class="w-4 h-4"></i>
+          <span data-template-id="nav-drivers" class="canva-text">Drivers</span>
+        </a> 
+        <a href="vehicles.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
+        >
+          <i data-lucide="truck" class="w-4 h-4"></i>
+          <span data-template-id="nav-vehicles" class="canva-text">Vehicles</span>
+        </a>
+        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
+          <i data-lucide="map-pin" class="w-4 h-4"></i>
+          <span>Active Trips</span>
+        </a> 
+        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
+          <i data-lucide="wrench" class="w-4 h-4"></i>
+          <span>Maintenance</span>
+        </a> 
+        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
+          <i data-lucide="fuel" class="w-4 h-4"></i>
+          <span>Fuel Logs</span>
+        </a> 
+        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
+          <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+          <span>Expenses</span>
+        </a> 
+        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+          <span>Reporting</span>
+        </a> 
+        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+          <span>System Settings</span>
+        </a> 
+      </nav>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="p-4 border-t border-slate-100">
+      <button id="logout-btn" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-rose-600 hover:bg-rose-50 hover:text-rose-700">
+        <i data-lucide="log-out" class="w-4 h-4"></i>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Viewport Container -->
+  <div class="flex-1 flex flex-col min-w-0">
+    
+    <!-- Topbar Component -->
+    <header class="border-b border-slate-200 bg-white px-8 py-5 flex items-center justify-between">
+      <div class="flex flex-col">
+        <h2 class="font-bold text-2xl text-slate-900">Fleet Management</h2>
+        <p class="text-xs text-slate-400 mt-0.5">Control hub to track heavy duty trucks, load parameters, and preventative maintenance</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <!-- Date Badge -->
+        <span class="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-full font-medium">
+          <i data-lucide="calendar" class="w-4 h-4 text-slate-500"></i>
+          12 Jul 2026
+        </span>
+        <!-- User Badge -->
+        <div class="flex items-center gap-2 pl-3 border-l border-slate-200">
+          <div id="user-badge" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm border border-slate-200">OP</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Scrollable main workspace -->
+    <main class="flex-1 p-8 space-y-8 overflow-y-auto">
+
+      <!-- Fleet Metrics Section -->
+      <section class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="premium-card p-6 flex items-center justify-between">
+          <div>
+            <span class="text-xs font-semibold uppercase text-slate-400">Total Fleet Assets</span>
+            <p id="total-vehicles-stat" class="text-3xl font-bold text-slate-900 mt-1">--</p>
+          </div>
+          <div class="w-12 h-12 bg-sky-50 rounded-xl flex items-center justify-center text-sky-600">
+            <i data-lucide="truck" class="w-6 h-6"></i>
+          </div>
+        </div>
+        <div class="premium-card p-6 flex items-center justify-between">
+          <div>
+            <span class="text-xs font-semibold uppercase text-slate-400">Active Deployed</span>
+            <p id="active-vehicles-stat" class="text-3xl font-bold text-slate-900 mt-1">--</p>
+          </div>
+          <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
+            <i data-lucide="gauge" class="w-6 h-6 animate-pulse"></i>
+          </div>
+        </div>
+        <div class="premium-card p-6 flex items-center justify-between">
+          <div>
+            <span class="text-xs font-semibold uppercase text-slate-400">In Maintenance</span>
+            <p id="maintenance-vehicles-stat" class="text-3xl font-bold text-slate-900 mt-1">--</p>
+          </div>
+          <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-500">
+            <i data-lucide="wrench" class="w-6 h-6"></i>
+          </div>
+        </div>
+        <div class="premium-card p-6 flex items-center justify-between">
+          <div>
+            <span class="text-xs font-semibold uppercase text-slate-400">Eco-Friendly Fleet</span>
+            <p id="eco-vehicles-stat" class="text-3xl font-bold text-slate-900 mt-1">--</p>
+          </div>
+          <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600">
+            <i data-lucide="leaf" class="w-6 h-6"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Directory Section -->
+      <section class="premium-card p-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <!-- Search inputs and Filter buttons -->
+          <div class="flex flex-1 flex-col sm:flex-row gap-3">
+            <div class="relative flex-1 max-w-md">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <i data-lucide="search" class="w-4 h-4"></i>
+              </span>
+              <input id="vehicle-search" type="text" placeholder="Search by plate plate, brand, model..." class="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-sky-500 focus:bg-white" />
+            </div>
+            
+            <select id="fuel-filter" class="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-600 focus:outline-none focus:border-sky-500">
+              <option value="ALL">All Fuel Types</option>
+              <option value="Diesel">Diesel Only</option>
+              <option value="CNG">CNG Only</option>
+              <option value="Electric">Electric (EV)</option>
+            </select>
+
+            <select id="status-filter" class="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-600 focus:outline-none focus:border-sky-500">
+              <option value="ALL">All Statuses</option>
+              <option value="Active">Active</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Out of Service">Out of Service</option>
+            </select>
+          </div>
+          
+          <!-- Call to Action -->
+          <button id="add-vehicle-btn" class="bg-gradient-to-r from-sky-600 to-emerald-500 text-white font-semibold text-sm px-4 py-2.5 rounded-full hover:opacity-90 flex items-center justify-center gap-2 shadow-sm transition-all">
+            <i data-lucide="plus" class="w-4 h-4"></i> Add Transport Vehicle
+          </button>
+        </div>
+
+        <!-- Directory Table Structure -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left text-slate-600">
+            <thead class="text-xs uppercase text-slate-400 tracking-wider bg-slate-50">
+              <tr>
+                <th class="py-3 px-6">Vehicle Model & Plate</th>
+                <th class="px-6">Model/Brand</th>
+                <th class="px-6">Transport Classification</th>
+                <th class="px-6">Fuel Type</th>
+                <th class="px-6">Load Capacity</th>
+                <th class="px-6">Operational Status</th>
+                <th class="px-6 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="vehicles-table-body" class="divide-y divide-slate-100">
+              <!-- Dynamically rendered rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ADD / EDIT VEHICLE DIALOG MODAL -->
+  <div id="vehicle-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
+    <!-- Backdrop overlay -->
+    <div class="fixed inset-0 modal-backdrop"></div>
+    
+    <!-- Modal container block -->
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 relative z-10 mx-4 transform scale-95 transition-all duration-150 shadow-2xl">
+      <div class="flex items-center justify-between mb-6">
+        <h3 id="modal-title" class="text-xl font-bold text-slate-900">Add Transport Vehicle</h3>
+        <button id="close-modal-btn" class="p-1 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="vehicle-form" class="space-y-4">
+        <!-- Hidden input for caching reference ID -->
+        <input type="hidden" id="form-vehicle-id" value="" />
+
+        <div>
+          <label for="form-plate" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">License Plate Number</label>
+          <input type="text" id="form-plate" required placeholder="PB-10-AX-XXXX" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white" />
+        </div>
+
+        <div>
+          <label for="form-brand" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Brand & Model Name</label>
+          <input type="text" id="form-brand" required placeholder="Tata Prima 2825" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="form-type" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Classification</label>
+            <select id="form-type" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white">
+              <option value="Heavy Truck">Heavy Truck</option>
+              <option value="Container Carrier">Container Carrier</option>
+              <option value="Medium Carrier">Medium Carrier</option>
+              <option value="Logistics Van">Logistics Van</option>
+            </select>
+          </div>
+          <div>
+            <label for="form-fuel" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Power Fuel Type</label>
+            <select id="form-fuel" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white">
+              <option value="Diesel">Diesel</option>
+              <option value="CNG">CNG</option>
+              <option value="Electric">Electric (EV)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="form-capacity" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Max Capacity</label>
+            <input type="text" id="form-capacity" required placeholder="25 Tons" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white" />
+          </div>
+          <div>
+            <label for="form-status" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Asset Status</label>
+            <select id="form-status" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white">
+              <option value="Active">Active</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Out of Service">Out of Service</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button type="button" id="cancel-modal-btn" class="px-4 py-2.5 text-sm font-semibold border border-slate-200 rounded-full text-slate-500 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2.5 text-sm font-semibold bg-gradient-to-r from-sky-600 to-emerald-500 text-white rounded-full hover:opacity-90 shadow-sm">Save Asset Details</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/_sdk/719055fef2a85d14.editing_sdk.js" xintegrity="sha512-kFqrdGgIiTOsu307feB5Cy3JVP9IayftsmCIZ0csxYBGuBmJQPhyvcnmKR8F0fTW97h5s1gAvz3SumI8zJ6OxQ=="></script>
+  <script>
+    (function() {
+      // Configuration & Host definition endpoints
+      const host = 'http://127.0.0.1:8000';
+      let vehiclesCache = [];
+
+      // Offline Fallback Mock Database for Vehicles fleet
+      const mockVehicles = [
+        { vehicle_id: 1, plate_number: "PB-10-AX-4421", brand: "Tata Prima 2825", type: "Heavy Truck", fuel_type: "Diesel", capacity: "25 Tons", status: "Active" },
+        { vehicle_id: 2, plate_number: "PB-11-BZ-7789", brand: "Mahindra Blazo X", type: "Container Carrier", fuel_type: "Diesel", capacity: "40 Tons", status: "Active" },
+        { vehicle_id: 3, plate_number: "PB-08-CK-3310", brand: "Ashok Leyland 1920", type: "Medium Carrier", fuel_type: "CNG", capacity: "15 Tons", status: "Maintenance" },
+        { vehicle_id: 4, plate_number: "PB-12-DW-5567", brand: "Eicher Pro 2049", type: "Logistics Van", fuel_type: "Electric", capacity: "5 Tons", status: "Out of Service" },
+        { vehicle_id: 5, plate_number: "CH-01-EV-2026", brand: "Tata Ultra T.7", type: "Logistics Van", fuel_type: "Electric", capacity: "7 Tons", status: "Active" }
+      ];
+
+      // Dynamic icon assets & initial topbar setups
+      lucide.createIcons();
+      setupHeaderProfile();
+
+      function setupHeaderProfile() {
+        try {
+          const userStr = localStorage.getItem('user');
+          if (userStr) {
+            const user = JSON.parse(userStr);
+            const badge = document.getElementById('user-badge');
+            if (badge && user.email) {
+              badge.textContent = user.email.substring(0, 2).toUpperCase();
+            }
+          }
+        } catch (err) {
+          console.warn(err);
+        }
+      }
+
+      // Notification helpers
+      function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.className = 'toast ' + type;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+
+      // Fetch fleet assets from database rest interface
+      async function loadVehicles() {
+        try {
+          const response = await fetch(`${host}/vehicles`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          });
+          if (response.ok) {
+            vehiclesCache = await response.json();
+          } else {
+            vehiclesCache = [...mockVehicles];
+          }
+        } catch (err) {
+          console.warn("FastAPI backend for fleet assets unreachable. Falling back to clean isolated cache.", err);
+          vehiclesCache = [...mockVehicles];
+        }
+        renderTable(vehiclesCache);
+        renderStats(vehiclesCache);
+      }
+
+      // Fleet usage operational stats
+      function renderStats(vehicles) {
+        document.getElementById('total-vehicles-stat').textContent = vehicles.length;
+        document.getElementById('active-vehicles-stat').textContent = vehicles.filter(v => v.status === 'Active').length;
+        document.getElementById('maintenance-vehicles-stat').textContent = vehicles.filter(v => v.status === 'Maintenance').length;
+        document.getElementById('eco-vehicles-stat').textContent = vehicles.filter(v => v.fuel_type === 'Electric' || v.fuel_type === 'CNG').length;
+      }
+
+      // Live formatting and element bindings
+      function renderTable(vehicles) {
+        const tbody = document.getElementById('vehicles-table-body');
+        tbody.innerHTML = '';
+
+        if (vehicles.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" class="py-12 text-center text-slate-400">
+                <div class="flex flex-col items-center justify-center gap-2">
+                  <i data-lucide="search-code" class="w-8 h-8 text-slate-300"></i>
+                  <span>No registered fleet vehicles found</span>
+                </div>
+              </td>
+            </tr>
+          `;
+          lucide.createIcons();
+          return;
+        }
+
+        vehicles.forEach(vehicle => {
+          // Status styles
+          let badgeClass = 'bg-slate-50 text-slate-700 border-slate-200';
+          if (vehicle.status === 'Active') badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+          else if (vehicle.status === 'Maintenance') badgeClass = 'bg-amber-50 text-amber-700 border-amber-200';
+          else if (vehicle.status === 'Out of Service') badgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
+
+          // Fuel icons/labels
+          let fuelIcon = 'fuel';
+          let fuelClass = 'text-slate-500 bg-slate-50 border-slate-200';
+          if (vehicle.fuel_type === 'Electric') {
+            fuelIcon = 'zap';
+            fuelClass = 'text-indigo-600 bg-indigo-50 border-indigo-200';
+          } else if (vehicle.fuel_type === 'CNG') {
+            fuelIcon = 'leaf';
+            fuelClass = 'text-emerald-600 bg-emerald-50 border-emerald-200';
+          }
+
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-50/70 transition-colors';
+          tr.innerHTML = `
+            <td class="py-4 px-6 font-semibold text-slate-900 flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500">
+                <i data-lucide="truck" class="w-5 h-5"></i>
+              </div>
+              <span class="font-mono text-xs font-bold bg-slate-100 text-slate-800 px-2 py-0.5 border border-slate-200 rounded">${escapeHTML(vehicle.plate_number)}</span>
+            </td>
+            <td class="px-6 text-slate-900 font-semibold">${escapeHTML(vehicle.brand)}</td>
+            <td class="px-6 text-slate-500">${escapeHTML(vehicle.type)}</td>
+            <td class="px-6">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 border rounded-full text-xs font-semibold ${fuelClass}">
+                <i data-lucide="${fuelIcon}" class="w-3.5 h-3.5"></i>
+                ${vehicle.fuel_type}
+              </span>
+            </td>
+            <td class="px-6 font-semibold text-slate-700">${escapeHTML(vehicle.capacity)}</td>
+            <td class="px-6">
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 border rounded-full text-xs font-bold ${badgeClass}">
+                ${vehicle.status}
+              </span>
+            </td>
+            <td class="px-6 text-center">
+              <div class="flex items-center justify-center gap-2">
+                <button class="edit-btn p-1.5 rounded-lg text-slate-500 hover:bg-slate-50 hover:text-sky-600 transition-all" data-id="${vehicle.vehicle_id}">
+                  <i data-lucide="edit" class="w-4 h-4"></i>
+                </button>
+                <button class="delete-btn p-1.5 rounded-lg text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-all" data-id="${vehicle.vehicle_id}">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        // Event triggers
+        tbody.querySelectorAll('.edit-btn').forEach(btn => {
+          btn.addEventListener('click', () => handleEditClick(btn.getAttribute('data-id')));
+        });
+        tbody.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', () => handleDeleteClick(btn.getAttribute('data-id')));
+        });
+
+        lucide.createIcons();
+      }
+
+      // Escaper
+      function escapeHTML(str) {
+        return str.replace(/[&<>'"]/g, 
+          tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+        );
+      }
+
+      // Filtering search indexes
+      const searchInput = document.getElementById('vehicle-search');
+      const fuelFilter = document.getElementById('fuel-filter');
+      const statusFilter = document.getElementById('status-filter');
+
+      function handleSearchAndFilter() {
+        const query = searchInput.value.toLowerCase().trim();
+        const fuelVal = fuelFilter.value;
+        const statusVal = statusFilter.value;
+
+        const filtered = vehiclesCache.filter(v => {
+          const matchesQuery = v.plate_number.toLowerCase().includes(query) || 
+                               v.brand.toLowerCase().includes(query) || 
+                               v.type.toLowerCase().includes(query);
+          const matchesFuel = (fuelVal === 'ALL' || v.fuel_type === fuelVal);
+          const matchesStatus = (statusVal === 'ALL' || v.status === statusVal);
+          return matchesQuery && matchesFuel && matchesStatus;
+        });
+        renderTable(filtered);
+      }
+
+      searchInput.addEventListener('input', handleSearchAndFilter);
+      fuelFilter.addEventListener('change', handleSearchAndFilter);
+      statusFilter.addEventListener('change', handleSearchAndFilter);
+
+      // Modal management
+      const vehicleModal = document.getElementById('vehicle-modal');
+      const vehicleForm = document.getElementById('vehicle-form');
+      const modalTitle = document.getElementById('modal-title');
+
+      function openModal(editVehicle = null) {
+        vehicleForm.reset();
+        vehicleModal.classList.remove('hidden');
+
+        if (editVehicle) {
+          modalTitle.textContent = 'Edit Transport Asset';
+          document.getElementById('form-vehicle-id').value = editVehicle.vehicle_id;
+          document.getElementById('form-plate').value = editVehicle.plate_number;
+          document.getElementById('form-brand').value = editVehicle.brand;
+          document.getElementById('form-type').value = editVehicle.type;
+          document.getElementById('form-fuel').value = editVehicle.fuel_type;
+          document.getElementById('form-capacity').value = editVehicle.capacity;
+          document.getElementById('form-status').value = editVehicle.status;
+        } else {
+          modalTitle.textContent = 'Add Transport Vehicle';
+          document.getElementById('form-vehicle-id').value = '';
+        }
+      }
+
+      function closeModal() {
+        vehicleModal.classList.add('hidden');
+      }
+
+      document.getElementById('add-vehicle-btn').addEventListener('click', () => openModal());
+      document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+      document.getElementById('cancel-modal-btn').addEventListener('click', closeModal);
+
+      // Edit triggered
+      function handleEditClick(id) {
+        const vehicle = vehiclesCache.find(v => v.vehicle_id == id);
+        if (vehicle) {
+          openModal(vehicle);
+        }
+      }
+
+      // Delete triggered
+      async function handleDeleteClick(id) {
+        const vehicle = vehiclesCache.find(v => v.vehicle_id == id);
+        if (!vehicle) return;
+
+        const confirmDelete = confirm(`Are you sure you want to permanently delete ${vehicle.plate_number} (${vehicle.brand})?`);
+        if (!confirmDelete) return;
+
+        try {
+          const response = await fetch(`${host}/vehicles/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          });
+          if (!response.ok) throw new Error('Failed to delete on API engine.');
+          showToast('Vehicle asset removed successfully', 'success');
+        } catch (err) {
+          // Local storage updates
+          vehiclesCache = vehiclesCache.filter(v => v.vehicle_id != id);
+          showToast('Removed locally (Backend offline)', 'info');
+        }
+
+        renderTable(vehiclesCache);
+        renderStats(vehiclesCache);
+      }
+
+      // Handle saving events
+      vehicleForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const id = document.getElementById('form-vehicle-id').value;
+        const plate_number = document.getElementById('form-plate').value.trim();
+        const brand = document.getElementById('form-brand').value.trim();
+        const type = document.getElementById('form-type').value;
+        const fuel_type = document.getElementById('form-fuel').value;
+        const capacity = document.getElementById('form-capacity').value.trim();
+        const status = document.getElementById('form-status').value;
+
+        const isEdit = !!id;
+
+        const payload = { plate_number, brand, type, fuel_type, capacity, status };
+
+        try {
+          let response;
+          if (isEdit) {
+            response = await fetch(`${host}/vehicles/${id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              },
+              body: JSON.stringify(payload)
+            });
+          } else {
+            response = await fetch(`${host}/vehicles`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              },
+              body: JSON.stringify(payload)
+            });
+          }
+
+          if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || 'Asset sync crashed.');
+          }
+
+          showToast(isEdit ? 'Vehicle asset updated!' : 'Vehicle asset added!', 'success');
+
+        } catch (err) {
+          // Local fallback simulations
+          if (isEdit) {
+            const index = vehiclesCache.findIndex(v => v.vehicle_id == id);
+            if (index !== -1) {
+              vehiclesCache[index] = { ...vehiclesCache[index], ...payload };
+              showToast('Updated locally (Backend offline)', 'info');
+            }
+          } else {
+            const newId = vehiclesCache.length ? Math.max(...vehiclesCache.map(v => v.vehicle_id)) + 1 : 1;
+            vehiclesCache.push({ vehicle_id: newId, ...payload });
+            showToast('Registered locally (Backend offline)', 'info');
+          }
+        }
+
+        closeModal();
+        renderTable(vehiclesCache);
+        renderStats(vehiclesCache);
+      });
+
+      // Handle log-out
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = './index.html';
+        });
+      }
+
+      // Initialize
+      loadVehicles();
+
+    })();
+  </script>
+</body>
+</html>
