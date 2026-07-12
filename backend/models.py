@@ -4,7 +4,7 @@ from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
-from .database import Base
+from database import Base
 
 class User(Base):
     __tablename__ = 'users'
