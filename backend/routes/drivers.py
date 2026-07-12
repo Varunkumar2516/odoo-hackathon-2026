@@ -7,12 +7,6 @@ from backend.database import get_db
 router = APIRouter(prefix="/drivers", tags=["Drivers"])
 
 
-@router.get("", response_model=list[schemamodels.DriverResponse])
-def get_drivers(db: Session = Depends(get_db)):
-
-    drivers = db.query(models.Driver).all()
-
-    return drivers
 @router.post("/")
 def register_driver(driver: schemamodels.DriverCreate, db: Session = Depends(get_db)):
     existing = db.query(models.Driver).filter(models.Driver.license_number == driver.license_number).first()
@@ -67,7 +61,7 @@ def create_driver(
         )
 
     existing_phone = db.query(models.Driver).filter(
-        models.Driver.phone == data.phone
+        models.Driver.contact_number == data.contact_number
     ).first()
 
     if existing_phone:
