@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — TransitOps</title>
+  <!-- Google Fonts: Inter/Outfit for premium typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:ital,wght@0,400;0,600;0,700;1,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Refined color palette matching the target layout */
+      --bg-gradient: linear-gradient(135deg, #4CAF50 0%, #2196F3 50%, #00BCD4 100%);
+      --btn-gradient: linear-gradient(90deg, #0288D1 0%, #4CAF50 100%);
+      --surface: #FFFFFF;
+      --text: #2D3748;
+      --text-secondary: #718096;
+      --input-bg: #F1F3F5;
+      --primary: #0288D1;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'IBM Plex Sans', sans-serif;
+      background-color: #E2E8F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    /* Master Container with rounded chassis */
+    .auth-container {
+      width: 100%;
+      max-width: 1200px;
+      background: var(--surface);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+    }
+
+    .auth-wrap {
+      display: grid;
+      grid-template-columns: 1fr;
+      min-height: 700px;
+    }
+
+    @media (min-width: 768px) {
+      .auth-wrap {
+        grid-template-columns: 50% 50%;
+      }
+    }
+
+    /* Left panel: Vibrant Branding with illustrative theme layout */
+    .auth-side {
+      background: var(--bg-gradient);
+      padding: 3.5rem 3rem;
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand-content h1 {
+      margin: 0 0 1rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 3rem;
+      font-weight: 700;
+      font-style: italic;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+
+    .auth-side .subtitle {
+      margin: 0 0 2rem;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.15rem;
+      line-height: 1.5;
+    }
+
+    /* Features stylized cleanly inside the visual canvas */
+    .auth-side .features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 2rem;
+      z-index: 2;
+    }
+
+    .auth-side .features li {
+      margin: 0.75rem 0;
+      font-size: 1.05rem;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      backdrop-filter: blur(4px);
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+
+    /* Bottom thematic accent mimicry (Windmills/Solar context element placeholders) */
+    .side-graphic-bg {
+      margin-top: auto;
+      width: 100%;
+      opacity: 0.25;
+      font-size: 5rem;
+      display: flex;
+      justify-content: space-around;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .auth-side .copy {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+      margin-top: 1.5rem;
+    }
+
+    /* Right panel: Clean minimalist Form Layout */
+    .auth-form-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+      background: var(--surface);
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+    }
+
+    .auth-card h2 {
+      margin: 0 0 0.25rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.75rem;
+      color: #1A202C;
+      font-weight: 700;
+    }
+
+    .auth-card .sub {
+      margin: 0 2rem 2rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.4rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      padding-left: 0.75rem;
+    }
+
+    /* Pill shaped input formatting */
+    .input {
+      width: 100%;
+      padding: 0.85rem 1.25rem;
+      font-size: 0.95rem;
+      border: 1px solid transparent;
+      background-color: var(--input-bg);
+      border-radius: 50px;
+      color: var(--text);
+      transition: all 0.2s ease;
+    }
+
+    .input:focus {
+      outline: none;
+      background-color: #FFFFFF;
+      border-color: #CBD5E0;
+      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+    }
+
+    .password-group {
+      position: relative;
+    }
+
+    .btn-toggle {
+      position: absolute;
+      top: 34px; /* Balanced relative to label and pill input height */
+      right: 1.25rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      opacity: 0.6;
+    }
+
+    /* Remember/Forgot utilities positioned cleanly */
+    .form-actions-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 1rem 0 1.75rem;
+      padding: 0 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .check-row input {
+      margin-right: 0.5rem;
+      accent-color: var(--primary);
+    }
+
+    .auth-link {
+      color: #4A5568;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    
+    .auth-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Premium Pill-shaped Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      transition: transform 0.1s ease, opacity 0.2s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--btn-gradient);
+      color: #fff;
+      height: 48px;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.25);
+    }
+
+    .btn-primary:hover {
+      opacity: 0.95;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Styled minimalist sub-option links */
+    .signup-text {
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .signup-text a {
+      color: #0288D1;
+      font-weight: 600;
+    }
+
+    /* Toast component style */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 0.75rem 1.5rem;
+      background: #333;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .toast.error { background: #E53E3E; }
+    .toast.success { background: #38A169; }
+  </style>
+</head>
+<body>
+
+  <div class="auth-container">
+    <div class="auth-wrap">
+      
+      <!-- Left panel: branding & modern graphics layout -->
+      <aside class="auth-side" aria-labelledby="brand-heading">
+        <div class="brand-content">
+          <h1 id="brand-heading">TransitOps</h1>
+          <p class="subtitle">Sign in to monitor, manage, and optimize your smart transport operations platform.</p>
+          <ul class="features">
+            <li>🚚 Fleet</li>
+            <li>👨‍✈️ Drivers</li>
+            <li>🗺️ Routes</li>
+            <li>🛠️ Logs</li>
+            <li>📊 Reports</li>
+          </ul>
+        </div>
+        
+        <!-- Abstract theme emojis mimicking your environment imagery layout -->
+        <div class="side-graphic-bg">
+          <span>⚙️</span>
+          <span>🌐</span>
+          <span>🏢</span>
+        </div>
+        
+        <p class="copy">&copy; 2026 TransitOps Inc.</p>
+      </aside>
+
+      <!-- Right panel: clean seamless login form -->
+      <main class="auth-form-wrap" aria-labelledby="login-heading">
+        <div class="auth-card">
+          <h2 id="login-heading">Sign In</h2>
+          <p class="sub">Sign in by entering the information below</p>
+          
+          <form id="login-form" aria-label="Login form">
+            <!-- Email/Username field -->
+            <div class="form-group">
+              <label for="email">User Name / Email</label>
+              <input id="email" name="email" type="email" placeholder="Enter your user name"
+                     required autocomplete="email" class="input" />
+            </div>
+            
+            <!-- Password field -->
+            <div class="form-group password-group">
+              <label for="password">Password</label>
+              <input id="password" name="password" type="password" placeholder="Enter password"
+                     required autocomplete="current-password" class="input" />
+              <button type="button" id="toggle-password" aria-label="Show or hide password"
+                      class="btn-toggle">👁️</button>
+            </div>
+
+            <!-- Context helper row -->
+            <div class="form-actions-row">
+              <label class="check-row">
+                <input type="checkbox" name="remember" />
+                Remember me
+              </label>
+              <a href="/forgot-password" class="auth-link">Forgot password?</a>
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit" class="btn btn-primary">
+              <span class="btn-label">Sign in</span>
+            </button>
+          </form>
+
+          <!-- Alternative minimalist link alignment -->
+          <p class="signup-text">
+            <a href="/signup">Sign up</a>
+          </p>
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('login-form');
+    const submitBtn = loginForm.querySelector('button[type="submit"]');
+    const passwordInput = document.getElementById('password');
+    const toggleBtn = document.getElementById('toggle-password');
+
+    // Toggle password visibility
+    toggleBtn.addEventListener('click', () => {
+      const type = passwordInput.getAttribute('type');
+      if (type === 'password') {
+        passwordInput.setAttribute('type', 'text');
+        toggleBtn.textContent = '🙈';
+      } else {
+        passwordInput.setAttribute('type', 'password');
+        toggleBtn.textContent = '👁️';
+      }
+    });
+
+    // Toast functionality
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.textContent = message;
+      toast.className = 'toast ' + type;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Form submit event handler
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        showToast('All fields are required', 'error');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.querySelector('.btn-label').textContent = 'Signing in...';
+
+      try {
+        const response = await fetch('/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.message || 'Login failed');
+        }
+        showToast('Welcome back!', 'success');
+        setTimeout(() => { window.location.href = '/dashboard'; }, 500);
+      } catch (err) {
+        showToast(err.message, 'error');
+        submitBtn.disabled = false;
+        submitBtn.querySelector('.btn-label').textContent = 'Sign in';
+      }
+    });
+  </script>
+</body>
+</html>
