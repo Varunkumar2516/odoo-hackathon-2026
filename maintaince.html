@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance | TransitOps</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>TransitOps</h2>
+
+    <ul>
+        <li><a href="index.html">🏠 Dashboard</a></li>
+        <li><a href="vehicles.html">🚚 Vehicles</a></li>
+        <li><a href="drivers.html">👨 Drivers</a></li>
+        <li><a href="trips.html">🛣 Trips</a></li>
+        <li><a href="maintenance.html">🔧 Maintenance</a></li>
+        <li><a href="reports.html">📊 Reports</a></li>
+    </ul>
+</div>
+
+<div class="main">
+
+    <div class="header">
+        <h1>Maintenance Management</h1>
+    </div>
+
+    <div class="form-container">
+        <h2>Create Maintenance Record</h2>
+
+        <form>
+
+            <label>Vehicle</label>
+            <select>
+                <option>Van-01</option>
+                <option>Truck-05</option>
+                <option>Bus-03</option>
+            </select>
+
+            <label>Maintenance Type</label>
+            <select>
+                <option>Oil Change</option>
+                <option>Engine Repair</option>
+                <option>Brake Service</option>
+                <option>Tyre Replacement</option>
+            </select>
+
+            <label>Description</label>
+            <textarea rows="4" placeholder="Enter maintenance details"></textarea>
+
+            <label>Maintenance Date</label>
+            <input type="date">
+
+            <label>Estimated Cost (₹)</label>
+            <input type="number" placeholder="Enter Cost">
+
+            <label>Status</label>
+            <select>
+                <option>Pending</option>
+                <option>In Progress</option>
+                <option>Completed</option>
+            </select>
+
+            <button type="submit">Save Record</button>
+
+        </form>
+    </div>
+
+    <div class="table-section">
+        <h2>Maintenance Records</h2>
+
+        <table>
+            <tr>
+                <th>Vehicle</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Cost</th>
+                <th>Status</th>
+            </tr>
+
+            <tr>
+                <td>Van-01</td>
+                <td>Oil Change</td>
+                <td>13-07-2026</td>
+                <td>₹2,000</td>
+                <td>Completed</td>
+            </tr>
+
+            <tr>
+                <td>Truck-05</td>
+                <td>Brake Service</td>
+                <td>14-07-2026</td>
+                <td>₹5,500</td>
+                <td>In Progress</td>
+            </tr>
+
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>
