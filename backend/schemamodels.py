@@ -63,18 +63,24 @@ class MaintenanceCreate(BaseModel):
 class UserCreate(BaseModel):
     email: str
     password: str
-    role: str  # Fleet Manager, Driver, Safety Officer, Financial Analyst
+    role: Literal['Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst', 'admin'] 
     name:str
     
 
 class UserResponse(BaseModel):
-    id: int
+    user_id: int
+    name:str
     email: str
     role: str
+    created_at:datetime 
 
     class Config:
         from_attributes = True
-
+class UserUpdate(BaseModel):
+    name:str
+    email:str
+    role:str
+    
 class UserLogin(BaseModel):
     email: str
     password: str

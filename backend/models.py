@@ -1,10 +1,21 @@
-from sqlalchemy import Column, Integer, Boolean, ForeignKey, Float, CheckConstraint, Date, DateTime, String
+from sqlalchemy import (
+    Column, 
+    Integer, 
+    Boolean, 
+    ForeignKey, 
+    Float, 
+    CheckConstraint, 
+    Date, 
+    DateTime, 
+    String, 
+    func
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
-from .database import Base
+from backend.database import Base
 
 class UserModel(Base):
     __tablename__ = 'users'
@@ -14,10 +25,16 @@ class UserModel(Base):
     email = Column(String(100), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
     role = Column(String(30), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow) # FIXED
+    
+    # FIX: Use func.now() for server side default timestamps
+    created_at = Column(DateTime, server_default=func.now()) 
 
+    # FIX: Converted dynamic python list lookup to standard database-level text constraints
     __table_args__ = (
-        CheckConstraint(role.in_(['Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst','admin']), name='check_valid_role'), # FIXED
+        CheckConstraint(
+            "role IN ('Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst', 'admin')", 
+            name='check_valid_role'
+        ),
     )
 
 
@@ -32,11 +49,14 @@ class Vehicle(Base):
     odometer_km = Column(Float, nullable=False, default=0.0)
     acquisition_cost = Column(Float, nullable=False)
     status = Column(String(30), nullable=False, default='Available')
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow) # FIXED
+    
+    # FIX: Kept application-layer defaults using python datetime references (no brackets)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow) 
 
+    # FIX: Converted dynamic constraints to strings
     __table_args__ = (
-        CheckConstraint(type.in_(['Van', 'Truck', 'Mini']), name='check_valid_vehicle_type'), # FIXED
-        CheckConstraint(status.in_(['Available', 'On Trip', 'In Shop', 'Retired']), name='check_valid_vehicle_status'), # FIXED
+        CheckConstraint("type IN ('Van', 'Truck', 'Mini')", name='check_valid_vehicle_type'),
+        CheckConstraint("status IN ('Available', 'On Trip', 'In Shop', 'Retired')", name='check_valid_vehicle_status'),
     )
     
     # Relationships
@@ -56,11 +76,12 @@ class Driver(Base):
     contact_number = Column(String(20), nullable=False)
     safety_score = Column(Float, default=100.0)
     status = Column(String(30), nullable=False, default='Available')
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow) # FIXED
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow) 
 
+    # FIX: Converted status validation to dynamic database safe string format
     __table_args__ = (
         CheckConstraint('safety_score >= 0 AND safety_score <= 100', name='check_safety_score_range'),
-        CheckConstraint(status.in_(['Available', 'On Trip', 'Off Duty', 'Suspended']), name='check_valid_driver_status'), # FIXED
+        CheckConstraint("status IN ('Available', 'On Trip', 'Off Duty', 'Suspended')", name='check_valid_driver_status'), 
     )
 
     # Relationships
@@ -78,10 +99,11 @@ class Trip(Base):
     cargo_weight_kg = Column(Float, nullable=False)
     planned_distance_km = Column(Float, nullable=False)
     status = Column(String(30), nullable=False, default='Draft')
-    created_at = Column(DateTime, default=datetime.utcnow) # FIXED
+    created_at = Column(DateTime, default=datetime.utcnow) 
 
+    # FIX: Formatted constraints as clean SQL expressions
     __table_args__ = (
-        CheckConstraint(status.in_(['Draft', 'Dispatched', 'Completed', 'Cancelled']), name='check_valid_trip_status'), # FIXED
+        CheckConstraint("status IN ('Draft', 'Dispatched', 'Completed', 'Cancelled')", name='check_valid_trip_status'), 
     )
 
     # Relationships
@@ -99,8 +121,9 @@ class MaintenanceLog(Base):
     service_date = Column(Date, nullable=False)
     status = Column(String(30), nullable=False, default='Active')
 
+    # FIX: Handled dynamic function constraint exception
     __table_args__ = (
-        CheckConstraint(status.in_(['Active', 'Closed']), name='check_valid_maintenance_status'), # FIXED
+        CheckConstraint("status IN ('Active', 'Closed')", name='check_valid_maintenance_status'), 
     )
 
     # Relationships
@@ -130,6 +153,7 @@ class Expense(Base):
     amount = Column(Float, nullable=False)
     date = Column(Date, nullable=False)
 
+    # FIX: Converted check constraints into database literal strings
     __table_args__ = (
-        CheckConstraint(expense_type.in_(['Toll', 'Maintenance Linked', 'Other']), name='check_valid_expense_type'), # FIXED
+        CheckConstraint("expense_type IN ('Toll', 'Maintenance Linked', 'Other')", name='check_valid_expense_type'), 
     )
