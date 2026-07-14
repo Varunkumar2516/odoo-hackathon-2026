@@ -2,26 +2,42 @@ from fastapi import Depends, APIRouter, status, HTTPException, Response,Request 
 from sqlalchemy.orm import Session
 from typing import List
 from backend.database import get_db
-from backend.schemamodels import UserCreate, UserResponse,UserLogin,LoginResponse
+from backend.schemamodels import UserCreate,UserResponse,UserUpdate
 from backend import models
 from fastapi.responses import JSONResponse
 from backend import oauth2
 from backend.utils import hash,VerifyHash
 router = APIRouter(
+    prefix='/api',
     tags=['User']
 )
 
-@router.post('/signup', status_code=status.HTTP_201_CREATED)
-async def CreateUser(data: UserCreate, db: Session = Depends(get_db)):
-    
-    # 1. Check if email already exists
-    user_with_email = db.query(models.UserModel).filter(models.UserModel.email == data.email).first()
+@router.get('/users',response_model=List[UserResponse])
+def getUsers(db : Session = Depends(get_db) ):
+   
+    Users = db.query(models.UserModel).all()
+    print("TOTAL USERS:", len(Users))
+    return Users
 
-    if  user_with_email :
+
+@router.post('/users',response_model=UserResponse)
+def createUser(data : UserCreate,
+               db : Session = Depends(get_db) ,
+               current_user : models.UserModel = Depends(oauth2.get_current_user)):
+    # first Proving the Current User Identity
+    if current_user.role not in  ["administrators",'admin']: 
+       raise HTTPException(
+        status_code=403,
+        detail="Only administrators can create users."
+        )
+
+    # now checking the DB if the Email Already Exist 
+    user_with_email = db.query(models.UserModel).filter(models.UserModel.email == data.email).first()
+    if user_with_email:
         raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail='Email Already Exists'
-            )
+            status_code=status.HTTP_409_CONFLICT,
+            detail='Email Already Exists'
+        )
     
     # 2. Hash password and update payload
     hashed_password = hash(data.password)
@@ -33,91 +49,52 @@ async def CreateUser(data: UserCreate, db: Session = Depends(get_db)):
     db.add(created_user)
     db.commit()
     db.refresh(created_user)
-
-    return {'success':'Your Account Created'}
-
-@router.post('/login', status_code=status.HTTP_200_OK)
-async def LoginUser(data: UserLogin, db: Session = Depends(get_db)):
-    print("LOGIN API CALLED")
-    user = db.query(models.UserModel).filter(models.UserModel.email == data.email).first()
     
+    return created_user
+
+@router.put('/users/{user_id}')
+def createUser(user_id:int,
+               data:UserUpdate,
+               db : Session = Depends(get_db) ,
+               current_user : models.UserModel = Depends(oauth2.get_current_user)):
     
-    if not user:
+    if current_user.role not in ["administrators",'admin']:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password"
+        status_code=403,
+        detail="Only administrators can Delete users."
         )
 
-    is_password_correct = VerifyHash(data.password, user.password)
-    if not is_password_correct:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password"
-        )
-        
-    access_token = oauth2.create_access_token(user_id = user.user_id)[0]
-    refresh_token,refresh_token_data = oauth2.create_refresh_token(user_id=user.user_id)
-
-    response = JSONResponse({
-        'message':'loginSuccess',
-    })
-
-    response.set_cookie(
-                key="access_token",
-                value=access_token,
-                httponly=True,
-                secure=False,
-                samesite="Lax"
-            )
-    response.set_cookie(
-                key="refresh_token",
-                value=refresh_token,
-                httponly=True,
-                secure=False,
-                samesite="Lax"
-            )
-    print(response.headers)
-    return response
-
-
-
-
-
-
-@router.get("/me")
-def me(access_token: str = Cookie(None), db: Session = Depends(get_db)):
-
-    if access_token is None:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-
-    try:
-        payload = oauth2.verify_access_token(access_token)
-        print("PAYLOAD:", payload)
-        user_id = payload.user_id
-
-        
-    except Exception as e:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Invalid token {e}"
-        )
-
-    user = db.query(models.UserModel).filter(
-        models.UserModel.user_id == user_id
-    ).first()
-
-    if not user:
-        raise HTTPException(
-            status_code=401,
-            detail="User not found"
-        )
+    user = db.query(models.UserModel).filter(models.UserModel.user_id==user_id)
+    required_user = user.first()
+    if required_user == None:
+         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='No Any User Exist.')
     
-    print("USER:", user)
+     
+    user.update(data.model_dump(),synchronize_session=False)
+    db.commit()
+    db.refresh(required_user)
+    return required_user
+ 
 
-    return {
-        "id": user.user_id,
-        "email": user.email,
-    }
+@router.delete('/users/{user_id}')
+def deleteUser(user_id:int ,
+               db : Session = Depends(get_db) ,
+               current_user : models.UserModel = Depends(oauth2.get_current_user)):
+    if current_user.role not in ["administrators",'admin']:
+        raise HTTPException(
+        status_code=403,
+        detail="Only administrators can Delete users."
+        )
 
-
+    deleted_user = db.query(models.UserModel).filter(models.UserModel.user_id == user_id).first()
+    if not deleted_user:
+       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='No Any User Exist.')
     
+    db.delete(deleted_user)
+    db.commit()
+    print('userDeleted')
+    return {'userDeleted':"success"}
+
+ 
