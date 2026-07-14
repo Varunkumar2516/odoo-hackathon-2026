@@ -83,69 +83,8 @@
 
   <!-- Sidebar Component -->
   <aside class="canva-sidebar w-64 min-h-screen flex-shrink-0 border-r border-slate-200 bg-white flex flex-col justify-between">
-    <div>
-      <!-- Brand Area -->
-      <div class="p-6 border-b border-slate-100 flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-600 to-emerald-500 flex items-center justify-center text-white font-bold text-lg">T</div>
-        <h1 class="text-xl font-bold tracking-tight text-slate-900">TransitOps</h1>
-      </div>
-      
-      <!-- Premium Navigation -->
-      <nav class="px-4 py-6 space-y-1" aria-label="Main navigation">
-        <a href="dashboard.html" class="nav-item  flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm"
-        >
-          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-          <span data-template-id="nav-dashboard" class="canva-text">Dashboard</span>
-        </a> 
-        <a href="users.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="users" class="w-4 h-4"></i>
-          <span data-template-id="nav-users" class="canva-text">Users</span>
-        </a> 
-        <a href="drivers.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
-        >
-          <i data-lucide="user-check" class="w-4 h-4"></i>
-          <span data-template-id="nav-drivers" class="canva-text">Drivers</span>
-        </a> 
-        <a href="vehicles.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
-        >
-          <i data-lucide="truck" class="w-4 h-4"></i>
-          <span data-template-id="nav-vehicles" class="canva-text">Vehicles</span>
-        </a>
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="map-pin" class="w-4 h-4"></i>
-          <span>Active Trips</span>
-        </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="wrench" class="w-4 h-4"></i>
-          <span>Maintenance</span>
-        </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="fuel" class="w-4 h-4"></i>
-          <span>Fuel Logs</span>
-        </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="dollar-sign" class="w-4 h-4"></i>
-          <span>Expenses</span>
-        </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-          <span>Reporting</span>
-        </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="settings" class="w-4 h-4"></i>
-          <span>System Settings</span>
-        </a> 
-      </nav>
-    </div>
-
-    <!-- Sidebar Footer with functional logout trigger -->
-    <div class="p-4 border-t border-slate-100">
-      <button id="logout-btn" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-rose-600 hover:bg-rose-50 hover:text-rose-700">
-        <i data-lucide="log-out" class="w-4 h-4"></i>
-        <span>Sign Out</span>
-      </button>
-    </div>
-  </aside>
+    <div id="sidebar"></div>
+    </aside>
 
   <!-- Main Viewport Container -->
   <div class="flex-1 flex flex-col min-w-0">
@@ -180,7 +119,7 @@
             <p id="total-users-stat" class="text-3xl font-bold text-slate-900 mt-1">--</p>
           </div>
           <div class="w-12 h-12 bg-sky-50 rounded-xl flex items-center justify-center text-sky-600">
-            <i data-lucide="users-round" class="w-6 h-6"></i>
+            <i data-lucide="users" class="w-6 h-6"></i>
           </div>
         </div>
         <div class="premium-card p-6 flex items-center justify-between">
@@ -198,7 +137,7 @@
             <p id="total-ops-stat" class="text-3xl font-bold text-slate-900 mt-1">--</p>
           </div>
           <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
-            <i data-lucide="route" class="w-6 h-6"></i>
+            <i data-lucide="map" class="w-6 h-6"></i>
           </div>
         </div>
         <div class="premium-card p-6 flex items-center justify-between">
@@ -314,203 +253,31 @@
     </div>
   </div>
 
-  <script src="/_sdk/719055fef2a85d14.editing_sdk.js" xintegrity="sha512-kFqrdGgIiTOsu307feB5Cy3JVP9IayftsmCIZ0csxYBGuBmJQPhyvcnmKR8F0fTW97h5s1gAvz3SumI8zJ6OxQ=="></script>
-  <script>
-    async function checkAuth(){
+    <script src="/frontend/script.js"></script>
+    <script src="/frontend/user.js"></script>
+    <script>
 
-    try{
 
-        const response=await fetch("http://127.0.0.1:8000/me",{
-
-            credentials:"include"
-
-        });
-
-        if(!response.ok){
-
-            window.location.href="login.html";
-
-            return null;
-
-        }
-
-        return await response.json();
-
-    }
-
-    catch(e){
-
-        window.location.href="login.html";
-
-        return null;
-
-    }
-
-}
-
-function setActiveSidebar(){
-
-    const page=window.location.pathname.split("/").pop();
-
-    document.querySelectorAll(".nav-item")
-    .forEach(item=>item.classList.remove("active"));
-
-    document.querySelectorAll(".nav-item").forEach(item=>{
-
-        if(item.getAttribute("href")==page){
-
-            item.classList.add("active");
-
-        }
-
-    });
-
-}
     (function() {
       // Configuration & variables setup
       const host = 'http://127.0.0.1:8000';
       let usersCache = [];
        
-      // Mock users database inside memory in case FastAPI is offline
-      const mockUsers = [
-        { user_id: 1, name: "Harpreet Singh", email: "harpreet@transitops.com", role: "admin", created_at: "2026-01-05T10:30:00" },
-        { user_id: 2, name: "Gurpreet Kaur", email: "gurpreet.ops@transitops.com", role: "Dispatcher", created_at: "2026-02-12T14:45:00" },
-        { user_id: 3, name: "Amandeep Sharma", email: "amandeep@transitops.com", role: "Fleet Manager", created_at: "2026-03-20T08:15:00" },
-        { user_id: 4, name: "Deepak Verma", email: "deepak.safety@transitops.com", role: "Safety Officer", created_at: "2026-04-18T11:00:00" },
-        { user_id: 5, name: "Raman Preet", email: "raman.finance@transitops.com", role: "Financial Analyst", created_at: "2026-05-10T16:20:00" }
-      ];
+      
 
       // Dynamic icons & UI details initialization
       lucide.createIcons();
       setupHeaderProfile();
 
-      // Load initial profile badge
-      function setupHeaderProfile() {
-        try {
-          const userStr = localStorage.getItem('user');
-          if (userStr) {
-            const user = JSON.parse(userStr);
-            const badge = document.getElementById('user-badge');
-            if (badge && user.email) {
-              badge.textContent = user.email.substring(0, 2).toUpperCase();
-            }
-          }
-        } catch (err) {
-          console.warn(err);
-        }
-      }
+      
 
       // Notification helper
-      function showToast(message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.textContent = message;
-        toast.className = 'toast ' + type;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-      }
 
-      // Load Users list from DB or Fallback Mock DB
-      async function loadUsers() {
-        try {
-          const response = await fetch(`${host}/users`, {
-            credentials:"include"
-          });
-          if (response.ok) {
-            usersCache = await response.json();
-          } else {
-            usersCache = [...mockUsers];
-          }
-        } catch (err) {
-          console.warn("Backend server not responding. Rendering premium fallback user cache.", err);
-          usersCache = [...mockUsers];
-        }
-        renderTable(usersCache);
-        renderStats(usersCache);
-      }
 
-      // Render calculations dynamically
-      function renderStats(users) {
-        document.getElementById('total-users-stat').textContent = users.length;
-        document.getElementById('total-admins-stat').textContent = users.filter(u => u.role === 'admin').length;
-        document.getElementById('total-ops-stat').textContent = users.filter(u => u.role === 'Dispatcher' || u.role === 'Fleet Manager').length;
-        document.getElementById('total-finance-stat').textContent = users.filter(u => u.role === 'Financial Analyst').length;
-      }
+      
 
-      // Render beautiful table data
-      function renderTable(users) {
-        const tbody = document.getElementById('users-table-body');
-        tbody.innerHTML = '';
 
-        if (users.length === 0) {
-          tbody.innerHTML = `
-            <tr>
-              <td colspan="5" class="py-12 text-center text-slate-400">
-                <div class="flex flex-col items-center justify-center gap-2">
-                  <i data-lucide="search-code" class="w-8 h-8 text-slate-300"></i>
-                  <span>No matching user accounts found</span>
-                </div>
-              </td>
-            </tr>
-          `;
-          lucide.createIcons();
-          return;
-        }
-
-        users.forEach(user => {
-          // Format role badges securely
-          let badgeClass = 'bg-slate-50 text-slate-700 border-slate-200';
-          if (user.role === 'admin') badgeClass = 'bg-purple-50 text-purple-700 border-purple-200';
-          else if (user.role === 'Fleet Manager') badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-          else if (user.role === 'Dispatcher') badgeClass = 'bg-sky-50 text-sky-700 border-sky-200';
-          else if (user.role === 'Safety Officer') badgeClass = 'bg-amber-50 text-amber-700 border-amber-200';
-          else if (user.role === 'Financial Analyst') badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
-
-          const formattedDate = new Date(user.created_at).toLocaleDateString('en-GB', {
-            day: 'numeric', month: 'short', year: 'numeric'
-          });
-
-          const tr = document.createElement('tr');
-          tr.className = 'hover:bg-slate-50/70 transition-colors';
-          tr.innerHTML = `
-            <td class="py-4 px-6 font-semibold text-slate-900">${escapeHTML(user.name)}</td>
-            <td class="px-6 text-slate-500">${escapeHTML(user.email)}</td>
-            <td class="px-6">
-              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 border rounded-full text-xs font-semibold ${badgeClass}">
-                ${user.role}
-              </span>
-            </td>
-            <td class="px-6 text-slate-500">${formattedDate}</td>
-            <td class="px-6 text-center">
-              <div class="flex items-center justify-center gap-2">
-                <button class="edit-btn p-1.5 rounded-lg text-slate-500 hover:bg-slate-50 hover:text-sky-600 transition-all" data-id="${user.user_id}">
-                  <i data-lucide="edit" class="w-4 h-4"></i>
-                </button>
-                <button class="delete-btn p-1.5 rounded-lg text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-all" data-id="${user.user_id}">
-                  <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
-              </div>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        // Event listener hooks
-        tbody.querySelectorAll('.edit-btn').forEach(btn => {
-          btn.addEventListener('click', () => handleEditClick(btn.getAttribute('data-id')));
-        });
-        tbody.querySelectorAll('.delete-btn').forEach(btn => {
-          btn.addEventListener('click', () => handleDeleteClick(btn.getAttribute('data-id')));
-        });
-
-        lucide.createIcons();
-      }
-
-      // Security Helper
-      function escapeHTML(str) {
-        return str.replace(/[&<>'"]/g, 
-          tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-        );
-      }
+     
 
       // Search & Filters Listener
       const searchInput = document.getElementById('user-search');
@@ -537,178 +304,90 @@ function setActiveSidebar(){
       const modalTitle = document.getElementById('modal-title');
       const passwordWrapper = document.getElementById('password-form-wrapper');
 
-      // Reset & Open Modal
-      function openModal(editUser = null) {
-        userForm.reset();
-        userModal.classList.remove('hidden');
-        
-        if (editUser) {
-          modalTitle.textContent = 'Edit User Profile';
-          document.getElementById('form-user-id').value = editUser.user_id;
-          document.getElementById('form-name').value = editUser.name;
-          document.getElementById('form-email').value = editUser.email;
-          document.getElementById('form-role').value = editUser.role;
-          
-          // Hide password editing during update constraints (managed separately for security)
-          passwordWrapper.classList.add('hidden');
-          document.getElementById('form-password').removeAttribute('required');
-        } else {
-          modalTitle.textContent = 'Add New User';
-          document.getElementById('form-user-id').value = '';
-          
-          passwordWrapper.classList.remove('hidden');
-          document.getElementById('form-password').setAttribute('required', 'required');
-        }
-      }
-
-      function closeModal() {
-        userModal.classList.add('hidden');
-      }
 
       document.getElementById('add-user-btn').addEventListener('click', () => openModal());
       document.getElementById('close-modal-btn').addEventListener('click', closeModal);
       document.getElementById('cancel-modal-btn').addEventListener('click', closeModal);
 
-      // Edit click action
-      function handleEditClick(id) {
-        const user = usersCache.find(u => u.user_id == id);
-        if (user) {
-          openModal(user);
-        }
-      }
-
-      // Delete user details
-      async function handleDeleteClick(id) {
-        const user = usersCache.find(u => u.user_id == id);
-        if (!user) return;
-
-        // Custom responsive confirm simulation
-        const confirmDelete = confirm(`Are you sure you want to permanently remove ${user.name}?`);
-        if (!confirmDelete) return;
-
-        try {
-          const response = await fetch(`${host}/users/${id}`, {
-            method: 'DELETE',
-        credentials:"include"
-          });
-          
-          if (!response.ok) throw new Error('Delete request failed on remote server.');
-          showToast('User deleted successfully', 'success');
-        } catch (err) {
-          // Fallback deletion inside local cache state
-          usersCache = usersCache.filter(u => u.user_id != id);
-          showToast('Deleted locally (Backend offline)', 'info');
-        }
-        
-        renderTable(usersCache);
-        renderStats(usersCache);
-      }
+      
 
       // Save Profile Form Submit
-      userForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const userId = document.getElementById('form-user-id').value;
-        const name = document.getElementById('form-name').value.trim();
-        const email = document.getElementById('form-email').value.trim();
-        const role = document.getElementById('form-role').value;
-        const password = document.getElementById('form-password').value;
+  userForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        const isEdit = !!userId;
+    const userId = document.getElementById("form-user-id").value;
+    const name = document.getElementById("form-name").value.trim();
+    const email = document.getElementById("form-email").value.trim();
+    const role = document.getElementById("form-role").value;
+    const password = document.getElementById("form-password").value;
 
-        // Validation checks
-        if (!name || !email || (!isEdit && !password)) {
-          showToast('Please fill out all mandatory fields', 'error');
-          return;
+    const isEdit = !!userId;
+
+    // Validation
+    if (!name || !email || (!isEdit && !password)) {
+        showToast("Please fill out all mandatory fields.", "error");
+        return;
+    }
+
+    const payload = { name, email, role };
+    if (!isEdit) payload.password = password;
+
+    try {
+        const url = isEdit
+            ? `${host}/api/users/${userId}`
+            : `${host}/api/users`;
+
+        const method = isEdit ? "PUT" : "POST";
+
+        const response = await fetch(url, {
+            method,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.detail || "Something went wrong.");
         }
 
-        const payload = { name, email, role };
-        if (!isEdit) payload.password = password;
-
-        try {
-          let response;
-          if (isEdit) {
-            // Update User endpoint logic
-            response = await fetch(`${host}/users/${userId}`, {
-              method: 'PUT',
-              headers: { 
-                'Content-Type': 'application/json',
-              },
-              credentials:"include",
-              body: JSON.stringify(payload)
-            });
-          } else {
-            // Create User endpoint logic (using sign up route)
-            response = await fetch(`${host}/auth/signup`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              credentials:"include",
-              body: JSON.stringify(payload)
-            });
-          }
-
-          if (!response.ok) {
-            const err = await response.json();
-            throw new Error(err.detail || err.message || 'Saving operation failed');
-          }
-
-          const savedUser = await response.json();
-          showToast(isEdit ? 'Profile updated successfully!' : 'User created successfully!', 'success');
-          
-        } catch (err) {
-          // Simulate update inside caching state if endpoint is not found or offline
-          if (isEdit) {
-            const index = usersCache.findIndex(u => u.user_id == userId);
-            if (index !== -1) {
-              usersCache[index] = { ...usersCache[index], name, email, role };
-              showToast('Updated locally (Backend offline)', 'info');
-            }
-          } else {
-            const newId = usersCache.length ? Math.max(...usersCache.map(u => u.user_id)) + 1 : 1;
-            usersCache.push({
-              user_id: newId,
-              name,
-              email,
-              role,
-              created_at: new Date().toISOString()
-            });
-            showToast('Registered locally (Backend offline)', 'info');
-          }
-        }
+        showToast(
+            isEdit
+                ? "User updated successfully!"
+                : "User created successfully!",
+            "success"
+        );
 
         closeModal();
-        renderTable(usersCache);
-        renderStats(usersCache);
-      });
 
+        // Reload latest data from backend
+        await loadUsers();
+
+    } catch (err) {
+        console.error(err);
+        showToast(err.message, "error");
+    }
+});
       // Handle sign out
       const logoutBtn = document.getElementById('logout-btn');
       if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
-          window.location.href = './index.html';
+          window.location.href = '/login';
         });
       }
 
       // Trigger initial loading
-      window.addEventListener("DOMContentLoaded",async()=>{
-
-    const user=await checkAuth();
-
-    if(!user) return;
-
-    setupHeaderProfile(user);
-
-    setActiveSidebar();
-
-    await loadUsers();
-
-    lucide.createIcons();
-
+window.addEventListener("DOMContentLoaded",async()=>{
+    loading();
 });
 
-    })();
+    })
+    ();
   </script>
 </body>
 </html>

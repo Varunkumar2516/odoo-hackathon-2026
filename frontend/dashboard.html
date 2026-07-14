@@ -102,76 +102,12 @@
       border-radius: 3px;
     }
   </style>
-  <script src="/_sdk/0179d719c431a79e.data_sdk.js" type="text/javascript" xintegrity="sha512-OsRvJkI5GkC3MJQcgotQYotpzrMSX415GiKKgvYdxQEEkzD/fdchShO2FMSy0PJr/tiINMXOk5Vl2zAgg6bUiA=="></script>
-  <script src="/_sdk/9432170dbd2ae0df.resizing_sdk.js" type="text/javascript" xintegrity="sha512-FeT+58sb1f9ejWPWFjCbJvTT+SDwGV+ngrHUnlO7TWEOoqwOLj6p256kO3vOL7DIWl1cIgrobiof8v2bOigwPg=="></script>
-</head>
+  </head>
 <body data-template-id="__page-root" class="min-h-screen flex w-full text-slate-700">
 
   <!-- Sidebar Component -->
   <aside data-template-id="sidebar" class="canva-sidebar w-64 min-h-screen flex-shrink-0 border-r border-slate-200 bg-white flex flex-col justify-between">
-    <div>
-      <!-- Brand Area -->
-      <div class="p-6 border-b border-slate-100 flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-600 to-emerald-500 flex items-center justify-center text-white font-bold text-lg">T</div>
-        <h1 data-template-id="brand-title" class="canva-text text-xl font-bold tracking-tight text-slate-900">TransitOps</h1>
-      </div>
-      
-      <!-- Premium Navigation -->
-      <nav class="px-4 py-6 space-y-1" aria-label="Main navigation">
-        <a href="dashboard.html" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm"
-        >
-          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-          <span data-template-id="nav-dashboard" class="canva-text">Dashboard</span>
-        </a> 
-        <a href="users.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
-        >
-          <i data-lucide="users" class="w-4 h-4"></i>
-          <span data-template-id="nav-users" class="canva-text">Users</span>
-        </a> 
-        <a href="drivers.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
-        >
-          <i data-lucide="user-check" class="w-4 h-4"></i>
-          <span data-template-id="nav-drivers" class="canva-text">Drivers</span>
-        </a> 
-        <a href="vehicles.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
-        >
-          <i data-lucide="truck" class="w-4 h-4"></i>
-          <span data-template-id="nav-vehicles" class="canva-text">Vehicles</span>
-        </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="map-pin" class="w-4 h-4"></i>
-          <span data-template-id="nav-trips" class="canva-text">Active Trips</span>
-        </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="wrench" class="w-4 h-4"></i>
-          <span data-template-id="nav-maintenance" class="canva-text">Maintenance</span>
-        </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="fuel" class="w-4 h-4"></i>
-          <span data-template-id="nav-fuel" class="canva-text">Fuel Logs</span>
-        </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="dollar-sign" class="w-4 h-4"></i>
-          <span data-template-id="nav-expenses" class="canva-text">Expenses</span>
-        </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-          <span data-template-id="nav-reports" class="canva-text">Reporting</span>
-        </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="settings" class="w-4 h-4"></i>
-          <span data-template-id="nav-settings" class="canva-text">System Settings</span>
-        </a> 
-      </nav>
-    </div>
-
-    <!-- Sidebar Footer -->
-    <div class="p-4 border-t border-slate-100">
-      <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-rose-600 hover:bg-rose-50 hover:text-rose-700">
-        <i data-lucide="log-out" class="w-4 h-4"></i>
-        <span data-template-id="nav-logout" class="canva-text">Sign Out</span>
-      </a>
-    </div>
+    <div id="sidebar"></div>
   </aside>
 
   <!-- Main Viewport Container -->
@@ -180,7 +116,7 @@
     <!-- Topbar Component -->
     <header data-template-id="topbar" class="canva-header border-b border-slate-200 bg-white px-8 py-5 flex items-center justify-between">
       <div class="flex flex-col">
-        <h2 data-template-id="page-heading" class="canva-text font-bold text-2xl text-slate-900">Operations Control Center</h2>
+        <h2 id= "page-heading" data-template-id="page-heading" class="canva-text font-bold text-2xl text-slate-900">Operations Control Center : Welcome</h2>
         <p class="text-xs text-slate-400 mt-0.5">Real-time status overview of smart transport system</p>
       </div>
       <div class="flex items-center gap-4">
@@ -411,39 +347,21 @@
     </main>
   </div>
 
-  <script src="/_sdk/719055fef2a85d14.editing_sdk.js" xintegrity="sha512-kFqrdGgIiTOsu307feB5Cy3JVP9IayftsmCIZ0csxYBGuBmJQPhyvcnmKR8F0fTW97h5s1gAvz3SumI8zJ6OxQ=="></script>
+  
+  <script src="frontend/script.js"></script>
   <script>
-    async function checkAuth() {
-
-    const res = await fetch("http://127.0.0.1:8000/me", {
-
-        credentials: "include"
-
-    });
-
-    if (!res.ok) {
-
-        window.location.href = "login.html";
-
-        return;
-    }
-
-    const user = await res.json();
-
-    console.log(user);
-     
-    return true
-}
 
     window.addEventListener("DOMContentLoaded", async () => {
+    
+    await loadSidebar();
 
     const ok = await checkAuth();
 
     if (!ok) return;
-
+    const  userobject = ok;
+    const heading = document.querySelector('#page-heading');
+    heading.innerText = `Operations Control Center : Welcome ${userobject.name}`
     lucide.createIcons();
-
-
 });
 
     const currentPage = window.location.pathname.split("/").pop();
