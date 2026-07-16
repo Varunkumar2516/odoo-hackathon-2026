@@ -25,17 +25,50 @@ class UserModel(Base):
     email = Column(String(100), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
     role = Column(String(30), nullable=False)
-    
+    contact_number = Column(String(20))
     # FIX: Use func.now() for server side default timestamps
     created_at = Column(DateTime, server_default=func.now()) 
 
     # FIX: Converted dynamic python list lookup to standard database-level text constraints
     __table_args__ = (
         CheckConstraint(
-            "role IN ('Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst', 'admin')", 
+            "role IN ('Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst', 'admin', 'Driver' )", 
             name='check_valid_role'
         ),
     )
+
+
+
+class Driver(Base):
+    __tablename__ = 'drivers'
+
+    driver_id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(
+        Integer,
+        ForeignKey("users.user_id"),
+        unique=True,
+        nullable=False
+    )
+    license_number = Column(String(50), unique=True, nullable=False)
+    license_category = Column(String(20), nullable=False)
+    license_expiry_date = Column(Date, nullable=False)
+    
+
+
+    safety_score = Column(Float, server_default='100.0')
+    status = Column(String(30), nullable=False, server_default='Available')
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now()) 
+
+    # FIX: Converted status validation to dynamic database safe string format
+    __table_args__ = (
+        CheckConstraint('safety_score >= 0 AND safety_score <= 100', name='check_safety_score_range'),
+        CheckConstraint("status IN ('Available', 'On Trip', 'Off Duty', 'Suspended')", name='check_valid_driver_status'), 
+    )
+
+    # Relationships
+    user = relationship("UserModel")
+    trips = relationship("Trip", back_populates="driver")
+
 
 
 class Vehicle(Base):
@@ -63,29 +96,6 @@ class Vehicle(Base):
     trips = relationship("Trip", back_populates="vehicle")
     maintenance_logs = relationship("MaintenanceLog", back_populates="vehicle")
     fuel_logs = relationship("FuelLog", back_populates="vehicle")
-
-
-class Driver(Base):
-    __tablename__ = 'drivers'
-
-    driver_id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100), nullable=False)
-    license_number = Column(String(50), unique=True, nullable=False)
-    license_category = Column(String(20), nullable=False)
-    license_expiry_date = Column(Date, nullable=False)
-    contact_number = Column(String(20), nullable=False)
-    safety_score = Column(Float, default=100.0)
-    status = Column(String(30), nullable=False, default='Available')
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow) 
-
-    # FIX: Converted status validation to dynamic database safe string format
-    __table_args__ = (
-        CheckConstraint('safety_score >= 0 AND safety_score <= 100', name='check_safety_score_range'),
-        CheckConstraint("status IN ('Available', 'On Trip', 'Off Duty', 'Suspended')", name='check_valid_driver_status'), 
-    )
-
-    # Relationships
-    trips = relationship("Trip", back_populates="driver")
 
 
 class Trip(Base):

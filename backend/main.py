@@ -13,12 +13,16 @@ app = FastAPI(title="TransitOps API")
 
 
 # 2. Register ALL your routes here so they appear in Swagger
+app.include_router(auth.router)
+app.include_router(user.router)
+app.include_router(drivers.router)
+
 app.include_router(trips.router)
 app.include_router(maintenance.router)
-app.include_router(user.router)
+
 app.include_router(vehicles.router)
-app.include_router(drivers.router)
-app.include_router(auth.router)
+
+
 
 
 
@@ -57,3 +61,8 @@ def dashboard():
 @app.get('/users')
 def Users():
     return FileResponse('frontend/users.html')
+
+
+@app.get('/drivers')
+def Users():
+    return FileResponse('frontend/drivers.html')

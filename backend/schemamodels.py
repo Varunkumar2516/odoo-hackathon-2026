@@ -12,27 +12,42 @@ from pydantic import BaseModel
 
 class DriverBase(BaseModel):
     name: str
-    license_number: str
-    license_category: str
-    license_expiry_date: date
+    email: str
     contact_number: str
-    safety_score: float = 100.0
-    status: str = "Available"
-
+    license_number:str
+    license_category:str
+    license_expiry_date:date
+    safety_score:float=100
+    password: str
+    status:Literal[
+        "Available",
+        "On Trip",
+        "Off Duty",
+        "Suspended"
+    ] = "Available"
 
 class DriverCreate(DriverBase):
     pass
+   
 
 
 class DriverUpdate(DriverBase):
     pass
 
 
-class DriverResponse(DriverBase):
+class DriverResponse(BaseModel):
     driver_id: int
+    user_id: int
+    name: str
+    email: str
+    contact_number: str
+    license_number: str
+    license_category: str
+    license_expiry_date: date
+    safety_score: float
+    status: str
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        from_attributes = True
 class VehicleCreate(BaseModel):
     reg_number: str
     model: str
@@ -40,11 +55,6 @@ class VehicleCreate(BaseModel):
     max_load: float
     acquisition_cost: float
 
-class DriverCreate(BaseModel):
-    name: str
-    license_number: str
-    license_category: str
-    license_expiry: date
 
 class TripCreate(BaseModel):
     vehicle_id: int
@@ -63,8 +73,9 @@ class MaintenanceCreate(BaseModel):
 class UserCreate(BaseModel):
     email: str
     password: str
-    role: Literal['Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst', 'admin'] 
+    role: Literal['Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst', 'admin','Driver'] 
     name:str
+    contact_number:str
     
 
 class UserResponse(BaseModel):
@@ -72,7 +83,7 @@ class UserResponse(BaseModel):
     name:str
     email: str
     role: str
-    created_at:datetime 
+    contact_number:Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -80,7 +91,8 @@ class UserUpdate(BaseModel):
     name:str
     email:str
     role:str
-    
+    contact_number: str
+
 class UserLogin(BaseModel):
     email: str
     password: str

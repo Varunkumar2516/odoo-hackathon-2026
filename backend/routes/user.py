@@ -43,7 +43,6 @@ def createUser(data : UserCreate,
     hashed_password = hash(data.password)
     user_dict = data.model_dump()
     user_dict["password"] = hashed_password
-    
     # 3. Initialize DB Model
     created_user = models.UserModel(**user_dict)
     db.add(created_user)
@@ -70,7 +69,9 @@ def createUser(user_id:int,
          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail='No Any User Exist.')
     
-     
+    if required_user.role.lower() =='driver':
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
+                            detail='Cannot Change Role Of Driver.')
     user.update(data.model_dump(),synchronize_session=False)
     db.commit()
     db.refresh(required_user)

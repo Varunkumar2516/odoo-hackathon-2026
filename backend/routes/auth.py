@@ -109,11 +109,21 @@ def me(access_token: str = Cookie(None), db: Session = Depends(get_db)):
             status_code=401,
             detail="User not found"
         )
-    
-    print("USER:", user)
 
     return {
-           "name":user.name  }
+           "name":user.name
+           }
 
 
-    
+@router.get('/logout')
+def logout(response:Response):
+    response.delete_cookie(
+        key="access_token",   # <-- cookie ka exact naam
+        path="/"
+    )
+    response.delete_cookie(
+        key="refresh_token",   # <-- cookie ka exact naam
+        path="/"
+    )
+
+    return {"message": "Logged out successfully"}
