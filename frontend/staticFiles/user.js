@@ -1,7 +1,3 @@
-
-
-const host = 'http://127.0.0.1:8000';
-
  // Security Helper
 function escapeHTML(str) {
         return str.replace(/[&<>'"]/g, 
@@ -9,27 +5,7 @@ function escapeHTML(str) {
         );
       }
 
-function showToast(message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.textContent = message;
-        toast.className = 'toast ' + type;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-      }
-function setupHeaderProfile() {
-    try {
-        const userStr = localStorage.getItem('user');
-        if (userStr) {
-        const user = JSON.parse(userStr);
-        const badge = document.getElementById('user-badge');
-        if (badge && user.email) {
-            badge.textContent = user.email.substring(0, 2).toUpperCase();
-        }
-        }
-    } catch (err) {
-        console.warn(err);
-    }
-    };
+
       // Render calculations dynamically
 function renderStats(users) {
         document.getElementById('total-users-stat').textContent = users.length;
@@ -53,6 +29,7 @@ function openModal(user = null) {
           document.getElementById('form-user-id').value = user.user_id;
           document.getElementById('form-name').value = user.name;
           document.getElementById('form-email').value = user.email;
+          document.getElementById('form-contact-number').value = user.contact_number;
           document.getElementById('form-role').value = user.role;
           
           // Hide password editing during update constraints (managed separately for security)
@@ -111,6 +88,25 @@ async function handleDeleteClick(id) {
     }
 }
 
+// Load Users list from DB or Fallback Mock DB
+async function loadUsers() {
+    try {
+        const response = await fetch(`${host}/api/users`, {
+        credentials:"include"
+        });
+        console.log("GET Status:", response.status);
+
+        if (!response.ok) {
+        throw new Error("Unable to load users.");
+        } 
+        usersCache = await response.json();
+    } catch (err) {
+        console.warn("Backend server not responding. Rendering premium fallback user cache.", err);
+    }
+    renderTable(usersCache);
+    renderStats(usersCache);
+    };
+
 
 // Render beautiful table data
 function renderTable(users) {
@@ -147,14 +143,6 @@ function renderTable(users) {
         else if (user.role === "Financial Analyst")
             badgeClass = "bg-blue-50 text-blue-700 border-blue-200";
 
-        const formattedDate = user.created_at
-            ? new Date(user.created_at).toLocaleDateString("en-GB", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric"
-              })
-            : "-";
-
         const tr = document.createElement("tr");
         tr.className = "hover:bg-slate-50/70 transition-colors";
 
@@ -166,7 +154,7 @@ function renderTable(users) {
                     ${escapeHTML(user.role)}
                 </span>
             </td>
-            <td class="px-6 text-slate-500">${formattedDate}</td>
+           <td class="px-6 text-slate-500">${escapeHTML(user.contact_number || "-")}</td>
             <td class="px-6 text-center">
                 <div class="flex items-center justify-center gap-2">
                     <button class="edit-btn p-1.5 rounded-lg text-slate-500 hover:bg-slate-50 hover:text-sky-600 transition-all"
@@ -203,39 +191,10 @@ tbody.addEventListener("click", (e) => {
     }
 
 });
-// Load Users list from DB or Fallback Mock DB
-async function loadUsers() {
-    try {
-        const response = await fetch(`${host}/api/users`, {
-        credentials:"include"
-        });
-        console.log("GET Status:", response.status);
 
-        if (!response.ok) {
-        throw new Error("Unable to load users.");
-        } 
-        usersCache = await response.json();
-    } catch (err) {
-        console.warn("Backend server not responding. Rendering premium fallback user cache.", err);
-    }
-    renderTable(usersCache);
-    renderStats(usersCache);
-    };
-
-
-async function loading(){
-
-
-    await loadSidebar();
-    const user=await checkAuth();
-
-    if(!user) return;
-
-    setupHeaderProfile(user);
-
-    setActiveSidebar();
-
-    await loadUsers();
-
-    lucide.createIcons();
-};
+window.addEventListener("DOMContentLoaded",async ()=>{
+   const user = await loading();
+   if(!user) return;
+   
+   await loadUsers();
+});

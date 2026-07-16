@@ -77,49 +77,7 @@
 
   <!-- Sidebar Component -->
   <aside class="canva-sidebar w-64 min-h-screen flex-shrink-0 border-r border-slate-200 bg-white flex flex-col justify-between hidden md:flex">
-    <div>
-      <div class="p-6 border-b border-slate-100 flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-600 to-emerald-500 flex items-center justify-center text-white font-bold text-lg">T</div>
-        <h1 class="text-xl font-bold tracking-tight text-slate-900">TransitOps</h1>
-      </div>
-      
-      <nav class="px-4 py-6 space-y-1" aria-label="Main navigation">
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-          <span>Dashboard</span>
-        </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="users" class="w-4 h-4"></i>
-          <span>Users</span>
-        </a> 
-        <a href="#" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm">
-          <i data-lucide="user-check" class="w-4 h-4"></i>
-          <span>Drivers</span>
-        </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="truck" class="w-4 h-4"></i>
-          <span>Vehicles</span>
-        </a>
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="map-pin" class="w-4 h-4"></i>
-          <span>Active Trips</span>
-        </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="wrench" class="w-4 h-4"></i>
-          <span>Maintenance</span>
-        </a> 
-        <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500">
-          <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-          <span>Reporting</span>
-        </a> 
-      </nav>
-    </div>
-    <div class="p-4 border-t border-slate-100">
-      <button id="logout-btn" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-rose-600 hover:bg-rose-50 hover:text-rose-700">
-        <i data-lucide="log-out" class="w-4 h-4"></i>
-        <span>Sign Out</span>
-      </button>
-    </div>
+  <div id="sidebar"></div>  
   </aside>
 
   <!-- Main Viewport Container -->
@@ -214,15 +172,26 @@
         <!-- Directory Table UI -->
         <div class="overflow-x-auto flex-1">
           <table class="w-full text-sm text-left text-slate-600">
-            <thead class="text-xs uppercase text-slate-400 tracking-wider bg-slate-50 border-b border-slate-200">
-              <tr>
-                <th class="py-4 px-6 rounded-tl-lg">Driver Profile</th>
-                <th class="py-4 px-6">License Details</th>
-                <th class="py-4 px-6">Contact Number</th>
-                <th class="py-4 px-6">Safety Score</th>
-                <th class="py-4 px-6">Status</th>
-                <th class="py-4 px-6 text-center rounded-tr-lg">Actions</th>
-              </tr>
+          <thead class="text-xs uppercase text-slate-400 tracking-wider bg-slate-50 border-b">
+
+            <tr>
+
+            <th class="py-4 px-6">Driver Profile</th>
+
+            <th class="py-4 px-6">Contact Number</th>
+
+            <th class="py-4 px-6">License Details</th>
+
+            <th class="py-4 px-6">License Expiry</th>
+
+            <th class="py-4 px-6">Safety Score</th>
+
+            <th class="py-4 px-6">Status</th>
+
+            <th class="py-4 px-6 text-center">Actions</th>
+
+            </tr>
+
             </thead>
             <tbody id="drivers-table-body" class="divide-y divide-slate-100">
               <tr><td colspan="6" class="p-8 text-center text-slate-400">Loading registry data...</td></tr>
@@ -249,310 +218,296 @@
       </div>
 
       <!-- Form Maps exactly to Pydantic schemamodels.DriverCreate / DriverUpdate -->
-      <form id="driver-form" class="space-y-4">
-        <input type="hidden" id="form-driver-id" value="" />
+  <form id="driver-form" class="grid grid-cols-2 gap-4">
 
-        <div>
-          <label for="form-name" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Full Name</label>
-          <input type="text" id="form-name" required placeholder="Sukhdev Singh" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white transition-all" />
-        </div>
+    <input type="hidden" id="form-driver-id">
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label for="form-license" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">License Number</label>
-            <input type="text" id="form-license" required placeholder="DL-14-XXXXXXXX" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white transition-all" />
-          </div>
-          <div>
-            <label for="form-category" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">License Category</label>
-            <input type="text" id="form-category" required placeholder="LMV, HMV, etc." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white transition-all" />
-          </div>
-        </div>
+    <div>
+        <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">
+            Driver Name
+        </label>
+        <input
+            id="form-name"
+            placeholder="John Doe"
+            type="text"
+            required
+            class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg ">
+    </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label for="form-expiry" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">License Expiry Date</label>
-            <input type="date" id="form-expiry" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white transition-all" />
-          </div>
-          <div>
-            <label for="form-phone" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Contact Number</label>
-            <input type="text" id="form-phone" required placeholder="+91 98765-XXXXX" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white transition-all" />
-          </div>
-        </div>
+    <div>
+        <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">
+            Email
+        </label>
+        <input
+            id="form-email"
+            placeholder="example@gmail.com"
+            type="email"
+            required
+            class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg">
+    </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label for="form-safety" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Safety Score (0-100)</label>
-            <input type="number" step="0.1" min="0" max="100" id="form-safety" required placeholder="100.0" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white transition-all" />
-          </div>
-          <div>
-            <label for="form-status" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Duty Status</label>
-            <select id="form-status" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white transition-all">
-              <option value="Available">Available</option>
-              <option value="On Trip">On Trip</option>
-              <option value="Off Duty">Off Duty</option>
-              <option value="Suspended">Suspended</option>
-            </select>
-          </div>
-        </div>
+    <div id="password-wrapper">
+        <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">
+            Password
+        </label>
+        <input
+            id="form-password"
+            placeholder="example@123"
+            type="password"
+            class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg">
+    </div>
 
-        <div class="pt-6 mt-2 border-t border-slate-100 flex items-center justify-end gap-3">
-          <button type="button" id="cancel-modal-btn" class="px-5 py-2.5 text-sm font-semibold border border-slate-200 rounded-full text-slate-600 hover:bg-slate-50 transition-colors">Cancel</button>
-          <button type="submit" class="px-6 py-2.5 text-sm font-semibold bg-gradient-to-r from-sky-600 to-emerald-500 text-white rounded-full hover:opacity-90 shadow-sm transition-opacity">Save Driver</button>
-        </div>
-      </form>
+    <div>
+        <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">
+            Contact Number
+        </label>
+        <input
+            id="form-contact-number"
+            placeholder="+91 82890-52758"
+            type="text"
+            required
+            class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg">
+    </div>
+
+    <div>
+        <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">
+            License Number
+        </label>
+        <input
+            id="form-license-number"
+            placeholder="SS-RRYYYYNNNNNNN"
+            type="text"
+            required
+            class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg">
+    </div>
+
+    <div>
+        <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">
+            License Category
+        </label>
+
+        <select
+            id="form-license-category"
+            class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg">
+
+            <option>LMV</option>
+            <option>HMV</option>
+            <option>MCWG</option>
+
+        </select>
+    </div>
+
+    <div>
+        <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">
+            Expiry Date
+        </label>
+
+        <input
+            id="form-license-expiry"
+            type="date"
+            required
+            class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg">
+    </div>
+
+    <div>
+        <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">
+            Safety Score
+        </label>
+
+        <input
+            id="form-safety-score"
+            type="number"
+            min="0"
+            max="100"
+            value="100"
+            class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg">
+    </div>
+
+    <div>
+        <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">
+            Status
+        </label>
+
+        <select
+            id="form-status"
+            class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg">
+
+            <option>Available</option>
+            <option>On Trip</option>
+            <option>Off Duty</option>
+            <option>Suspended</option>
+
+        </select>
+    </div>
+
+    <div class="pt-4 border-t flex justify-end gap-3">
+
+        <button
+            type="button"
+            id="cancel-modal-btn"
+            class="px-5 py-2 rounded-full border">
+
+            Cancel
+
+        </button>
+
+        <button
+            type="submit"
+            id="save-driver-btn"
+            class="px-5 py-2 rounded-full bg-sky-600 text-white">
+
+            Save Driver
+
+        </button>
+
+    </div>
+
+</form>
     </div>
   </div>
+  <script src="/frontend/staticFiles/script.js"></script>
+  <script src="/frontend/staticFiles/drivers.js"></script>
+
 
   <script>
+
     (function() {
-      const host = 'http://127.0.0.1:8000';
-      let driversCache = [];
-
-      // Offline mock matching SQLAlchemy Schema precisely
-      const mockDrivers = [
-        { driver_id: 1, name: "Sukhdev Singh", license_number: "DL-14-20210084", license_category: "HMV", license_expiry_date: "2028-10-15", contact_number: "+91 98765-43210", status: "On Trip", safety_score: 98.5 },
-        { driver_id: 2, name: "Balwinder Singh", license_number: "PB-11-20190045", license_category: "LMV", license_expiry_date: "2025-05-20", contact_number: "+91 98123-45678", status: "Available", safety_score: 92.0 },
-        { driver_id: 3, name: "Gurdev Singh", license_number: "HR-26-20200031", license_category: "HMV", license_expiry_date: "2029-12-01", contact_number: "+91 98234-56789", status: "Off Duty", safety_score: 100.0 }
-      ];
-
+      
       document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
       window.addEventListener("DOMContentLoaded", async () => {
+          await loading();
           await loadDrivers();
           lucide.createIcons();
       });
-
-      function showToast(message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.textContent = message;
-        toast.className = 'toast ' + type;
-        document.body.appendChild(toast);
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateY(1rem)';
-            toast.style.transition = 'all 0.2s';
-            setTimeout(() => toast.remove(), 200);
-        }, 3000);
-      }
-
-      async function loadDrivers() {
-        try {
-          const response = await fetch(`${host}/drivers`, { credentials: "include" }); // Adjust credentials if auth needed
-          if (response.ok) {
-            driversCache = await response.json();
-          } else {
-            throw new Error("Failed response");
-          }
-        } catch (err) {
-          console.warn("Backend not reachable. Loading mock state.");
-          driversCache = [...mockDrivers];
-          showToast('Local offline mode (Backend unreachable)', 'error');
-        }
-        renderTable(driversCache);
-        renderStats(driversCache);
-      }
-
-      function renderStats(drivers) {
-        document.getElementById('total-drivers-stat').textContent = drivers.length;
-        document.getElementById('total-active-stat').textContent = drivers.filter(d => d.status === 'On Trip' || d.status === 'Available').length;
-        document.getElementById('total-standby-stat').textContent = drivers.filter(d => d.status === 'Off Duty').length;
-        
-        if (drivers.length > 0) {
-          const totalScore = drivers.reduce((acc, current) => acc + Number(current.safety_score || 0), 0);
-          const avg = (totalScore / drivers.length).toFixed(1);
-          document.getElementById('avg-rating-stat').textContent = `${avg} / 100`;
-        } else {
-          document.getElementById('avg-rating-stat').textContent = 'N/A';
-        }
-      }
-
-      function renderTable(drivers) {
-        const tbody = document.getElementById('drivers-table-body');
-        tbody.innerHTML = '';
-
-        if (drivers.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="6" class="py-16 text-center text-slate-400">No drivers found.</td></tr>`;
-          return;
-        }
-
-        drivers.forEach(driver => {
-          let badgeClass = 'bg-slate-50 text-slate-700 border-slate-200';
-          if (driver.status === 'Available') badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-          else if (driver.status === 'On Trip') badgeClass = 'bg-sky-50 text-sky-700 border-sky-200';
-          else if (driver.status === 'Off Duty') badgeClass = 'bg-slate-100 text-slate-600 border-slate-300';
-          else if (driver.status === 'Suspended') badgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
-
-          const tr = document.createElement('tr');
-          tr.className = 'hover:bg-slate-50/70 transition-colors group';
-          tr.innerHTML = `
-            <td class="py-4 px-6 font-semibold text-slate-900 flex items-center gap-3">
-              <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-slate-100 to-slate-200 text-slate-600 font-bold flex items-center justify-center text-sm border border-slate-300">
-                ${driver.name.charAt(0).toUpperCase()}
-              </div>
-              <span>${escapeHTML(driver.name)}</span>
-            </td>
-            <td class="px-6 py-4">
-              <div class="flex flex-col">
-                <span class="font-mono text-slate-700 font-medium">${escapeHTML(driver.license_number)}</span>
-                <span class="text-xs text-slate-400 mt-0.5">Cat: ${escapeHTML(driver.license_category)} | Exp: ${escapeHTML(driver.license_expiry_date)}</span>
-              </div>
-            </td>
-            <td class="px-6 py-4 text-slate-600 font-medium">${escapeHTML(driver.contact_number)}</td>
-            <td class="px-6 py-4">
-              <div class="flex items-center gap-2">
-                <div class="w-16 h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div class="h-full ${driver.safety_score > 80 ? 'bg-emerald-500' : (driver.safety_score > 50 ? 'bg-amber-400' : 'bg-rose-500')}" style="width: ${driver.safety_score}%"></div>
-                </div>
-                <span class="font-semibold text-slate-700 text-sm">${Number(driver.safety_score).toFixed(1)}</span>
-              </div>
-            </td>
-            <td class="px-6 py-4">
-              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 border rounded-full text-xs font-semibold ${badgeClass}">
-                <span class="w-1.5 h-1.5 rounded-full ${driver.status === 'Available' ? 'bg-emerald-500' : (driver.status === 'On Trip' ? 'bg-sky-500' : (driver.status === 'Off Duty' ? 'bg-slate-400' : 'bg-rose-500'))}"></span>
-                ${driver.status}
-              </span>
-            </td>
-            <td class="px-6 py-4 text-center">
-              <div class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button class="edit-btn p-1.5 rounded-lg text-slate-500 hover:bg-white hover:text-sky-600 border border-transparent hover:border-slate-200 transition-all" data-id="${driver.driver_id}" title="Edit Driver">
-                  <i data-lucide="edit-2" class="w-4 h-4"></i>
-                </button>
-                <button class="delete-btn p-1.5 rounded-lg text-slate-500 hover:bg-white hover:text-rose-600 border border-transparent hover:border-slate-200 transition-all" data-id="${driver.driver_id}" title="Delete Driver">
-                  <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
-              </div>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        tbody.querySelectorAll('.edit-btn').forEach(btn => btn.addEventListener('click', () => handleEditClick(btn.getAttribute('data-id'))));
-        tbody.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', () => handleDeleteClick(btn.getAttribute('data-id'))));
-        lucide.createIcons();
-      }
-
-      function escapeHTML(str) {
-        if (!str) return '';
-        return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
-      }
-
-      // Search and Filters
-      document.getElementById('driver-search').addEventListener('input', handleSearchAndFilter);
-      document.getElementById('status-filter').addEventListener('change', handleSearchAndFilter);
-
-      function handleSearchAndFilter() {
-        const query = document.getElementById('driver-search').value.toLowerCase().trim();
-        const statusVal = document.getElementById('status-filter').value;
-        const filtered = driversCache.filter(d => {
-          const mQ = d.name.toLowerCase().includes(query) || d.license_number.toLowerCase().includes(query) || d.contact_number.includes(query);
-          const mS = (statusVal === 'ALL' || d.status === statusVal);
-          return mQ && mS;
-        });
-        renderTable(filtered);
-      }
-
+      
       // Modal Triggers
       const driverModal = document.getElementById('driver-modal');
       const driverForm = document.getElementById('driver-form');
       const modalTitle = document.getElementById('modal-title');
 
-      function openModal(editDriver = null) {
-        driverForm.reset();
-        driverModal.classList.remove('hidden');
-
-        if (editDriver) {
-          modalTitle.textContent = 'Edit Driver Profile';
-          document.getElementById('form-driver-id').value = editDriver.driver_id;
-          document.getElementById('form-name').value = editDriver.name;
-          document.getElementById('form-license').value = editDriver.license_number;
-          document.getElementById('form-category').value = editDriver.license_category;
-          document.getElementById('form-expiry').value = editDriver.license_expiry_date ? editDriver.license_expiry_date.split('T')[0] : '';
-          document.getElementById('form-phone').value = editDriver.contact_number;
-          document.getElementById('form-safety').value = editDriver.safety_score;
-          document.getElementById('form-status').value = editDriver.status;
-        } else {
-          modalTitle.textContent = 'Register New Driver';
-          document.getElementById('form-driver-id').value = '';
-          document.getElementById('form-safety').value = '100.0';
-        }
-      }
-
-      function closeModal() { driverModal.classList.add('hidden'); }
+    
       document.getElementById('add-driver-btn').addEventListener('click', () => openModal());
       document.getElementById('close-modal-btn').addEventListener('click', closeModal);
       document.getElementById('cancel-modal-btn').addEventListener('click', closeModal);
       document.getElementById('modal-backdrop-bg').addEventListener('click', closeModal);
 
-      function handleEditClick(id) {
-        const driver = driversCache.find(d => d.driver_id == id);
-        if (driver) openModal(driver);
-      }
-
-      async function handleDeleteClick(id) {
-        const driver = driversCache.find(d => d.driver_id == id);
-        if (!confirm(`Are you sure you want to delete ${driver.name}?`)) return;
-
-        try {
-          const response = await fetch(`${host}/drivers/${id}`, { method: 'DELETE' });
-          if (!response.ok) throw new Error('Delete failed.');
-          driversCache = driversCache.filter(d => d.driver_id != id);
-          showToast('Driver deleted successfully', 'success');
-        } catch (err) {
-          driversCache = driversCache.filter(d => d.driver_id != id);
-          showToast('Removed driver locally (Backend offline)', 'error');
-        }
-        renderTable(driversCache);
-        renderStats(driversCache);
-      }
-
-      driverForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const driverId = document.getElementById('form-driver-id').value;
-        const isEdit = !!driverId;
-
-        const payload = { 
-            name: document.getElementById('form-name').value.trim(), 
-            license_number: document.getElementById('form-license').value.trim(), 
-            license_category: document.getElementById('form-category').value.trim(),
-            license_expiry_date: document.getElementById('form-expiry').value,
-            contact_number: document.getElementById('form-phone').value.trim(), 
-            safety_score: parseFloat(document.getElementById('form-safety').value) || 100.0, 
-            status: document.getElementById('form-status').value 
-        };
-
-        try {
-          const url = isEdit ? `${host}/drivers/${driverId}` : `${host}/drivers`;
-          const method = isEdit ? "PUT" : "POST";
-          
-          const response = await fetch(url, {
-              method: method,
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload)
-          });
-
-          if (!response.ok) throw new Error('API Sync Failed');
-          await loadDrivers(); // Fetch fresh data
-          showToast(isEdit ? 'Driver updated!' : 'Driver registered!', 'success');
-
-        } catch (err) {
-          // Fallback UI update
-          if (isEdit) {
-            const index = driversCache.findIndex(d => d.driver_id == driverId);
-            if (index !== -1) driversCache[index] = { ...driversCache[index], ...payload };
-            showToast('Updated locally (Backend unreachable)', 'error');
-          } else {
-            const newId = driversCache.length ? Math.max(...driversCache.map(d => d.driver_id)) + 1 : 1;
-            driversCache.unshift({ driver_id: newId, ...payload });
-            showToast('Registered locally (Backend unreachable)', 'error');
-          }
-          renderTable(driversCache);
-          renderStats(driversCache);
-        }
-        closeModal();
-      });
       
-    })();
+
+driverForm.addEventListener("submit", async (e) => {
+
+    e.preventDefault();
+
+    const driverId = document.getElementById("form-driver-id").value;
+
+    const isEdit = !!driverId;
+
+    const payload = {
+
+        name: document.getElementById("form-name").value.trim(),
+
+        email: document.getElementById("form-email").value.trim(),
+
+        contact_number: document.getElementById("form-contact-number").value.trim(),
+
+        password: document.getElementById("form-password").value,
+
+        license_number: document.getElementById("form-license-number").value.trim(),
+
+        license_category: document.getElementById("form-license-category").value,
+
+        license_expiry_date: document.getElementById("form-license-expiry").value,
+
+        safety_score: Number(document.getElementById("form-safety-score").value),
+
+        status: document.getElementById("form-status").value
+
+    };
+
+    try {
+
+        let response;
+
+        if (isEdit) {
+
+            response = await fetch(`${host}/api/drivers/${driverId}`, {
+
+                method: "PUT",
+
+                credentials: "include",
+
+                headers: {
+
+                    "Content-Type": "application/json"
+                    
+                },
+
+                body: JSON.stringify(payload)
+
+            });
+
+        }
+
+        else {
+
+            response = await fetch(`${host}/api/drivers`, {
+
+                method: "POST",
+
+                credentials: "include",
+
+                headers: {
+
+                    "Content-Type": "application/json"
+
+                },
+
+                body: JSON.stringify(payload)
+
+            });
+
+        }
+
+        if (!response.ok) {
+
+            const err = await response.json();
+
+            throw new Error(err.detail);
+
+        }
+
+        showToast(
+
+            isEdit
+
+            ? "Driver Updated Successfully"
+
+            : "Driver Registered Successfully",
+
+            "success"
+
+        );
+
+        closeModal();
+
+        await loadDrivers();
+
+    }
+
+    catch(err){
+
+        console.error(err);
+
+        showToast(err.message,"error");
+
+    }
+
+});
+    
+
+})();
+
+    
   </script>
 </body>
 </html>

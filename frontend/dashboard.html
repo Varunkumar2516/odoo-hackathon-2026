@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <script>window["__codeletBootstrap__"]=JSON.parse('{"A":"A","B":"20260710-05-9ed98a3"}');</script>
-  <script src="/_sdk/f432b76fb310b513.telemetry_sdk.js" xintegrity="sha512-9FJQ55EKmmqhyyik8BhrMVfm0+iYYfb8uOlRsjtkxJMEI97qOVEI4PnHohDjQAtvAep0IOEpdQ64eki0sz62ug=="></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TransitOps — Dashboard</title>
@@ -127,7 +126,7 @@
         </span>
         <!-- User Badge -->
         <div class="flex items-center gap-2 pl-3 border-l border-slate-200">
-          <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm border border-slate-200">OP</div>
+          <div id="user-badge" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm border border-slate-200">OP</div>
         </div>
       </div>
     </header>
@@ -348,32 +347,19 @@
   </div>
 
   
-  <script src="frontend/script.js"></script>
+  <script src="frontend/staticFiles/script.js"></script>
+
   <script>
 
-    window.addEventListener("DOMContentLoaded", async () => {
-    
-    await loadSidebar();
+window.addEventListener("DOMContentLoaded", async () => {
+    const user = await loading();
+    if(!user) return;
 
-    const ok = await checkAuth();
+    const heading = document.getElementById("page-heading");
 
-    if (!ok) return;
-    const  userobject = ok;
-    const heading = document.querySelector('#page-heading');
-    heading.innerText = `Operations Control Center : Welcome ${userobject.name}`
-    lucide.createIcons();
-});
-
-    const currentPage = window.location.pathname.split("/").pop();
-
-    document.querySelectorAll(".nav-item").forEach(item => {
-      item.classList.remove("active");
-
-      const href = item.getAttribute("href");
-
-      if (href === currentPage) {
-          item.classList.add("active");
-    }
+    heading.textContent =
+    `Operations Control Center : Welcome ${user.name}`;
+  
 });
   </script>
 </body>

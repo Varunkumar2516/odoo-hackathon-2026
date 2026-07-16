@@ -186,7 +186,7 @@
                 <th class="py-3 px-6">Name</th>
                 <th class="px-6">Email Address</th>
                 <th class="px-6">System Role</th>
-                <th class="px-6">Created On</th>
+                <th class="px-6">Contact Number</th>
                 <th class="px-6 text-center">Actions</th>
               </tr>
             </thead>
@@ -233,7 +233,19 @@
           <label for="form-password" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Password</label>
           <input type="password" id="form-password" placeholder="••••••••" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white" />
         </div>
-
+        
+        <div id="contact-form-wrapper">
+        <label for="form-contact-number" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">
+          Contact Number
+        </label>
+        <input
+          type="tel"
+          id="form-contact-number"
+          placeholder="+91 98765 43210"
+          class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white"
+        />
+        </div>
+        
         <div>
           <label for="form-role" class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Authorized Role</label>
           <select id="form-role" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 focus:bg-white">
@@ -253,31 +265,17 @@
     </div>
   </div>
 
-    <script src="/frontend/script.js"></script>
-    <script src="/frontend/user.js"></script>
+    <script src="/frontend/staticFiles/script.js"></script>
+    <script src="/frontend/staticFiles/user.js"></script>
     <script>
 
 
     (function() {
       // Configuration & variables setup
-      const host = 'http://127.0.0.1:8000';
-      let usersCache = [];
-       
       
-
+    
       // Dynamic icons & UI details initialization
       lucide.createIcons();
-      setupHeaderProfile();
-
-      
-
-      // Notification helper
-
-
-      
-
-
-     
 
       // Search & Filters Listener
       const searchInput = document.getElementById('user-search');
@@ -320,7 +318,7 @@
     const email = document.getElementById("form-email").value.trim();
     const role = document.getElementById("form-role").value;
     const password = document.getElementById("form-password").value;
-
+    const contact_number = document.getElementById("form-contact-number").value;
     const isEdit = !!userId;
 
     // Validation
@@ -329,7 +327,7 @@
         return;
     }
 
-    const payload = { name, email, role };
+    const payload = { name, email, role ,contact_number};
     if (!isEdit) payload.password = password;
 
     try {
@@ -371,16 +369,7 @@
         showToast(err.message, "error");
     }
 });
-      // Handle sign out
-      const logoutBtn = document.getElementById('logout-btn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          window.location.href = '/login';
-        });
-      }
-
+      
       // Trigger initial loading
 window.addEventListener("DOMContentLoaded",async()=>{
     loading();
