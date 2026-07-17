@@ -192,9 +192,3 @@ tbody.addEventListener("click", (e) => {
 
 });
 
-window.addEventListener("DOMContentLoaded",async ()=>{
-   const user = await loading();
-   if(!user) return;
-   
-   await loadUsers();
-});

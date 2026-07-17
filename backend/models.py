@@ -26,7 +26,7 @@ class UserModel(Base):
     password = Column(String(255), nullable=False)
     role = Column(String(30), nullable=False)
     contact_number = Column(String(20))
-    # FIX: Use func.now() for server side default timestamps
+    # FIX: Use func.now() for server sideserver_default timestamps
     created_at = Column(DateTime, server_default=func.now()) 
 
     # FIX: Converted dynamic python list lookup to standard database-level text constraints
@@ -79,12 +79,13 @@ class Vehicle(Base):
     name_model = Column(String(100), nullable=False)
     type = Column(String(50), nullable=False)
     max_load_capacity_kg = Column(Float, nullable=False)
-    odometer_km = Column(Float, nullable=False, default=0.0)
+    odometer_km = Column(Float, nullable=False, server_default='0.0')
     acquisition_cost = Column(Float, nullable=False)
-    status = Column(String(30), nullable=False, default='Available')
+    status = Column(String(30), nullable=False, server_default='Available')
     
-    # FIX: Kept application-layer defaults using python datetime references (no brackets)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow) 
+    # FIX: Kept application-layerserver_defaults using python datetime references (no brackets)
+    created_at = Column(DateTime, server_default=func.now()) 
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now()) 
 
     # FIX: Converted dynamic constraints to strings
     __table_args__ = (
@@ -108,8 +109,8 @@ class Trip(Base):
     driver_id = Column(Integer, ForeignKey('drivers.driver_id'), nullable=False)
     cargo_weight_kg = Column(Float, nullable=False)
     planned_distance_km = Column(Float, nullable=False)
-    status = Column(String(30), nullable=False, default='Draft')
-    created_at = Column(DateTime, default=datetime.utcnow) 
+    status = Column(String(30), nullable=False, server_default='Draft')
+    created_at = Column(DateTime, server_default=func.now()) 
 
     # FIX: Formatted constraints as clean SQL expressions
     __table_args__ = (
@@ -127,9 +128,9 @@ class MaintenanceLog(Base):
     maintenance_id = Column(Integer, primary_key=True, autoincrement=True)
     vehicle_id = Column(Integer, ForeignKey('vehicles.vehicle_id'), nullable=False)
     service_type = Column(String(100), nullable=False)
-    cost = Column(Float, nullable=False, default=0.0)
+    cost = Column(Float, nullable=False,server_default='0.0')
     service_date = Column(Date, nullable=False)
-    status = Column(String(30), nullable=False, default='Active')
+    status = Column(String(30), nullable=False,server_default='Active')
 
     # FIX: Handled dynamic function constraint exception
     __table_args__ = (

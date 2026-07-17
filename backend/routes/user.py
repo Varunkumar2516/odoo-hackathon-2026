@@ -14,9 +14,7 @@ router = APIRouter(
 
 @router.get('/users',response_model=List[UserResponse])
 def getUsers(db : Session = Depends(get_db) ):
-   
     Users = db.query(models.UserModel).all()
-    print("TOTAL USERS:", len(Users))
     return Users
 
 
@@ -89,6 +87,9 @@ def deleteUser(user_id:int ,
         )
 
     deleted_user = db.query(models.UserModel).filter(models.UserModel.user_id == user_id).first()
+    if deleted_user.role.lower() =='driver':
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
+                            detail='Cannot Delete Driver From here.')
     if not deleted_user:
        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail='No Any User Exist.')

@@ -66,3 +66,7 @@ def Users():
 @app.get('/drivers')
 def Users():
     return FileResponse('frontend/drivers.html')
+
+@app.get('/vehicles')
+def Vehicles():
+    return FileResponse("frontend/vehicles.html")
