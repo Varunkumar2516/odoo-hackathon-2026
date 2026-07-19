@@ -1,0 +1,44 @@
+<div
+  id="confirm-modal"
+  class="fixed inset-0 bg-black/50 hidden z-[999] flex items-center justify-center"
+>
+  <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl">
+    <!-- Header -->
+    <div class="flex items-center justify-between p-5 border-b">
+      <h2 id="confirm-title" class="text-xl font-bold text-slate-800">
+        Confirmation
+      </h2>
+
+      <button
+        id="confirm-close-btn"
+        class="text-slate-400 hover:text-slate-700"
+      >
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6">
+      <p id="confirm-message" class="text-slate-600 leading-relaxed">
+        Are you sure?
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex justify-end gap-3 p-5 border-t">
+      <button
+        id="confirm-cancel-btn"
+        class="px-5 py-2 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-100"
+      >
+        Cancel
+      </button>
+
+      <button
+        id="confirm-action-btn"
+        class="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+      >
+        Confirm
+      </button>
+    </div>
+  </div>
+</div>

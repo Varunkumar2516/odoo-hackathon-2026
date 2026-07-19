@@ -363,7 +363,9 @@
           <!-- Alternative minimalist link alignment -->
           <p class="signup-text">
             <a href="/signup">Sign up</a>
+            
           </p>
+          
         </div>
       </main>
 
@@ -379,7 +381,7 @@
     
     // Updated to match your FastAPI router setup prefix (/auth/login)
     const host = 'http://127.0.0.1:8000';
-
+    
     // Toggle password visibility
     toggleBtn.addEventListener('click', () => {
       const type = passwordInput.getAttribute('type');
@@ -445,6 +447,24 @@
         submitBtn.querySelector('.btn-label').textContent = 'Sign in';
       }
     });
+  document.addEventListener("DOMContentLoaded", async () => {
+
+      try {
+
+          const response = await fetch(`${host}/api/me`, {
+              credentials: "include"
+          });
+
+          if (response.ok) {
+              window.location.href = "/dashboard";
+          }
+
+      } catch (err) {
+          // User is not logged in, stay on login page
+      }
+
+  });
+
   </script>
 </body>
 </html>

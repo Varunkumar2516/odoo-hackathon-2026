@@ -70,3 +70,8 @@ def Users():
 @app.get('/vehicles')
 def Vehicles():
     return FileResponse("frontend/vehicles.html")
+
+
+@app.get('/trips')
+def Vehicles():
+    return FileResponse("frontend/trips.html")

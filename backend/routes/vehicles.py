@@ -125,3 +125,20 @@ def delete_vehicle(
                 detail=f"Cannot Delete vehicle due to {e}"
             ) 
         
+
+
+
+# load All available Vehicles
+@router.get("/vehicles/available", response_model=list[schemamodels.VehicleResponse])
+def get_available_vehicles(
+    db: Session = Depends(get_db),
+    current_user: models.UserModel = Depends(oauth2.get_current_user)
+):
+
+    vehicles = (
+        db.query(models.Vehicle)
+        .filter(models.Vehicle.status == "Available")
+        .all()
+    )
+
+    return vehicles

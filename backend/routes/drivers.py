@@ -197,3 +197,24 @@ def delete_driver(
     return {
         "message": "Driver deleted successfully."
 }
+
+
+
+# load only Available Drivers
+@router.get("/drivers/available", response_model=list[schemamodels.DriverResponse])
+def get_available_drivers(
+    db: Session = Depends(get_db),
+    current_user: models.UserModel = Depends(oauth2.get_current_user)
+):
+    
+    drivers = (
+        db.query(models.Driver)
+        .filter(models.Driver.status == "Available")
+        .all()
+    )
+    result = []
+
+    for driver in drivers:
+
+        result.append(Helper(driver))
+    return result

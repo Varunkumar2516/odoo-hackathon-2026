@@ -113,12 +113,74 @@ class VehicleResponse(BaseModel):
 
 # trip Create Models
 class TripCreate(BaseModel):
-    vehicle_id: int
-    driver_id: int
+
+    trip_id: str
+
     source: str
+
     destination: str
-    cargo_weight: float
-    distance: float
+
+    vehicle_id: int
+
+    driver_id: int
+
+    cargo_weight_kg: float
+
+    planned_distance_km: float
+
+    status: Literal[
+        "Draft",
+        "Dispatched",
+        "Completed",
+        "Cancelled"
+    ] = "Draft"
+
+
+class TripUpdate(BaseModel):
+
+    source: str
+
+    destination: str
+
+    vehicle_id: int
+
+    driver_id: int
+
+    cargo_weight_kg: float
+
+    planned_distance_km: float
+
+class TripResponse(BaseModel):
+
+    trip_id: str
+
+    source: str
+
+    destination: str
+
+    vehicle_id: int
+
+    driver_id: int
+
+    vehicle: str
+
+    driver: str
+
+    cargo_weight_kg: float
+
+    planned_distance_km: float
+
+    status: str
+
+    created_at: datetime
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )
+
+
+
+
 
 class MaintenanceCreate(BaseModel):
     vehicle_id: int
