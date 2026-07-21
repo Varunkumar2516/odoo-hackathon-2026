@@ -49,7 +49,7 @@ def home():
     return {"safe Running ":'Varun app'}
 # login Page 
 @app.get('/login')
-def home():
+def login():
     return FileResponse("frontend/login.html")
 
 # dashboard Page 
@@ -64,7 +64,7 @@ def Users():
 
 
 @app.get('/drivers')
-def Users():
+def drivers():
     return FileResponse('frontend/drivers.html')
 
 @app.get('/vehicles')
@@ -73,5 +73,9 @@ def Vehicles():
 
 
 @app.get('/trips')
-def Vehicles():
+def trips():
     return FileResponse("frontend/trips.html")
+
+@app.get('/maintainence')
+def maintainence():
+    return FileResponse("frontend/maintainence.html")
