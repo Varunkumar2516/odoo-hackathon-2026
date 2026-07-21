@@ -183,9 +183,51 @@ class TripResponse(BaseModel):
 
 
 class MaintenanceCreate(BaseModel):
+
     vehicle_id: int
-    description: str
+
+    service_type: str
+
+    service_date: date
+
     cost: float
+
+    status: Literal[
+        "Active",
+        "Closed"
+    ] = "Active"
+
+
+class MaintenanceUpdate(BaseModel):
+
+    vehicle_id: int
+
+    service_type: str
+
+    service_date: date
+
+    cost: float
+
+
+class MaintenanceResponse(BaseModel):
+
+    maintenance_id: int
+
+    vehicle_id: int
+
+    vehicle: str
+
+    service_type: str
+
+    service_date: date
+
+    cost: float
+
+    status: str
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )
 # --- AUTHENTICATION MODELS ---
 
 
