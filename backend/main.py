@@ -83,3 +83,7 @@ def maintainence():
 @app.get('/fuels')
 def maintainence():
     return FileResponse("frontend/fuellogs.html")
+
+@app.get('/expense')
+def maintainence():
+    return FileResponse("frontend/expenses.html")

@@ -8,6 +8,40 @@ router = APIRouter(prefix="/api", tags=["Maintenance"])
 
 
 
+# to get Active maintenance 
+@router.get("/maintenance/active")
+def get_active_maintenance(
+    db: Session = Depends(get_db),
+    current_user: models.UserModel = Depends(oauth2.get_current_user)
+):
+
+    maintenance = (
+        db.query(models.MaintenanceLog)
+        .filter(models.MaintenanceLog.status == "Active")
+        .all()
+    )
+
+    result = []
+
+    for item in maintenance:
+
+        result.append({
+
+            "maintenance_id": item.maintenance_id,
+
+            "vehicle_id": item.vehicle_id,
+
+            "vehicle": item.vehicle.registration_number,
+
+            "service_type": item.service_type,
+
+            "trip_id": item.trip_id
+
+        })
+
+    return result
+
+
 # get all Maintenance Record 
 @router.get( "/maintenance",response_model=list[schemamodels.MaintenanceResponse])
 def get_all_maintenance(
@@ -325,3 +359,4 @@ def delete_maintenance(
         "message": "Maintenance log deleted successfully."
 
     }
+

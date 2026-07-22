@@ -111,6 +111,7 @@ class Trip(Base):
     planned_distance_km = Column(Float, nullable=False)
     status = Column(String(30), nullable=False, server_default='Draft')
     created_at = Column(DateTime, server_default=func.now()) 
+    estimated_cost = Column(Float,nullable=True,server_default="0.0")
 
     # FIX: Formatted constraints as clean SQL expressions
     __table_args__ = (
@@ -131,7 +132,8 @@ class MaintenanceLog(Base):
     cost = Column(Float, nullable=False,server_default='0.0')
     service_date = Column(Date, nullable=False)
     status = Column(String(30), nullable=False,server_default='Active')
-
+    trip_id = Column(String(50),ForeignKey("trips.trip_id"),nullable=True)
+    
     # FIX: Handled dynamic function constraint exception
     __table_args__ = (
         CheckConstraint("status IN ('Active', 'Closed')", name='check_valid_maintenance_status'), 
@@ -149,7 +151,8 @@ class FuelLog(Base):
     date = Column(Date, nullable=False)
     liters_filled = Column(Float, nullable=False)
     fuel_cost = Column(Float, nullable=False)
-
+    trip_id = Column(String(50),ForeignKey("trips.trip_id"),nullable=True)
+    maintenance_id = Column(Integer,ForeignKey("maintenance_logs.maintenance_id"),nullable=True)
     # Relationships
     vehicle = relationship("Vehicle", back_populates="fuel_logs")
 

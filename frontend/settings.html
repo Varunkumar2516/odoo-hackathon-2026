@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TransitOps — System Settings</title>
+
+    <!-- Tailwind CSS & Lucide Icons -->
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+
+    <!-- Premium Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8fafc;
+      }
+      h1,
+      h2,
+      h3,
+      .font-display {
+        font-family: "Outfit", sans-serif;
+      }
+
+      /* Sidebar premium active transitions */
+      .nav-item {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .nav-item:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+        padding-left: 1rem;
+      }
+      .nav-item.active {
+        background: linear-gradient(90deg, #e0f2fe 0%, #f0f9ff 100%);
+        color: #0288d1;
+        font-weight: 600;
+        border-left: 4px solid #0288d1;
+        padding-left: 1rem;
+      }
+
+      /* Cards */
+      .premium-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        box-shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.02),
+          0 2px 4px -1px rgba(0, 0, 0, 0.01);
+      }
+
+      /* Toggles */
+      .toggle-checkbox:checked {
+        right: 0;
+        border-color: #0ea5e9;
+      }
+      .toggle-checkbox:checked + .toggle-label {
+        background-color: #0ea5e9;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen flex w-full text-slate-700">
+    <!-- Authentication Guard Script -->
+    <script>
+      let currentUser = null;
+
+      async function checkAuth() {
+        try {
+          const res = await fetch("http://127.0.0.1:8000/me", {
+            credentials: "include",
+          });
+          if (!res.ok) {
+            // window.location.href = "login.html";
+            return {
+              name: "Local Admin",
+              email: "admin@transitops.com",
+              role: "Administrator",
+              created_at: new Date().toISOString(),
+            };
+          }
+          return await res.json();
+        } catch (err) {
+          console.warn("Backend Auth unreachable. Using Local Admin state.");
+          return {
+            name: "Local Admin",
+            email: "admin@transitops.com",
+            role: "Administrator",
+            created_at: new Date().toISOString(),
+          };
+        }
+      }
+    </script>
+
+    <!-- Sidebar Component -->
+    <aside
+      class="canva-sidebar w-64 min-h-screen flex-shrink-0 border-r border-slate-200 bg-white flex flex-col justify-between hidden md:flex"
+    >
+      <div>
+        <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+          <div
+            class="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-600 to-emerald-500 flex items-center justify-center text-white font-bold text-lg"
+          >
+            T
+          </div>
+          <h1 class="text-xl font-bold tracking-tight text-slate-900">
+            TransitOps
+          </h1>
+        </div>
+
+        <nav class="px-4 py-6 space-y-1" aria-label="Main navigation">
+          <a
+            href="dashboard.html"
+            class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
+          >
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i
+            ><span>Dashboard</span>
+          </a>
+          <a
+            href="users.html"
+            class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
+          >
+            <i data-lucide="users" class="w-4 h-4"></i><span>Users</span>
+          </a>
+          <a
+            href="drivers.html"
+            class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
+          >
+            <i data-lucide="user-check" class="w-4 h-4"></i><span>Drivers</span>
+          </a>
+          <a
+            href="vehicles.html"
+            class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
+          >
+            <i data-lucide="truck" class="w-4 h-4"></i><span>Vehicles</span>
+          </a>
+          <a
+            href="trips.html"
+            class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
+          >
+            <i data-lucide="map-pin" class="w-4 h-4"></i
+            ><span>Active Trips</span>
+          </a>
+          <a
+            href="maintenance.html"
+            class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
+          >
+            <i data-lucide="wrench" class="w-4 h-4"></i><span>Maintenance</span>
+          </a>
+          <a
+            href="fuel.html"
+            class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
+          >
+            <i data-lucide="fuel" class="w-4 h-4"></i><span>Fuel Logs</span>
+          </a>
+          <a
+            href="expenses.html"
+            class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
+          >
+            <i data-lucide="dollar-sign" class="w-4 h-4"></i
+            ><span>Expenses</span>
+          </a>
+          <a
+            href="reporting.html"
+            class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-500"
+          >
+            <i data-lucide="bar-chart-3" class="w-4 h-4"></i
+            ><span>Reporting</span>
+          </a>
+          <a
+            href="settings.html"
+            class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm"
+          >
+            <i data-lucide="settings" class="w-4 h-4"></i
+            ><span>System Settings</span>
+          </a>
+        </nav>
+      </div>
+      <div class="p-4 border-t border-slate-100">
+        <button
+          id="logout-btn"
+          class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+        >
+          <i data-lucide="log-out" class="w-4 h-4"></i><span>Sign Out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Viewport Container -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <!-- Topbar Component -->
+      <header
+        class="border-b border-slate-200 bg-white px-8 py-5 flex items-center justify-between sticky top-0 z-20"
+      >
+        <div class="flex flex-col">
+          <h2 class="font-bold text-2xl text-slate-900">System Preferences</h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Manage your profile, platform configurations, and security
+            credentials.
+          </p>
+        </div>
+        <div class="flex items-center gap-4">
+          <span
+            class="hidden sm:flex items-center gap-2 text-sm text-slate-600 bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-full font-medium"
+          >
+            <i data-lucide="calendar" class="w-4 h-4 text-slate-500"></i>
+            <span id="current-date">Today</span>
+          </span>
+          <div
+            class="flex items-center gap-2 pl-3 sm:border-l border-slate-200"
+          >
+            <div
+              id="user-badge"
+              class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm border border-slate-200"
+            >
+              OP
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Scrollable main workspace -->
+      <main
+        class="flex-1 p-8 overflow-y-auto max-w-5xl mx-auto w-full space-y-8"
+      >
+        <!-- Profile Section -->
+        <section class="premium-card p-0 overflow-hidden">
+          <div
+            class="h-32 bg-gradient-to-r from-sky-600 to-indigo-600 w-full relative"
+          >
+            <div class="absolute inset-0 bg-black/10"></div>
+          </div>
+          <div class="px-8 pb-8">
+            <div
+              class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 -mt-12 mb-8"
+            >
+              <div class="flex items-end gap-5">
+                <div
+                  id="profile-avatar"
+                  class="w-24 h-24 rounded-2xl bg-white p-1 shadow-lg border border-slate-200 z-10 flex items-center justify-center text-4xl font-bold text-sky-600"
+                >
+                  OP
+                </div>
+                <div
+                  class="pb-1 z-10 sm:z-auto bg-white/80 sm:bg-transparent px-3 sm:px-0 rounded-lg backdrop-blur-sm sm:backdrop-blur-none inline-block"
+                >
+                  <h3
+                    id="profile-name"
+                    class="text-2xl font-bold text-slate-900 leading-tight"
+                  >
+                    Loading...
+                  </h3>
+                  <p
+                    id="profile-role"
+                    class="text-sm font-medium text-sky-600 mt-0.5"
+                  >
+                    Loading...
+                  </p>
+                </div>
+              </div>
+              <button
+                class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors border border-slate-200"
+              >
+                <i data-lucide="edit-3" class="w-4 h-4"></i> Edit Profile
+              </button>
+            </div>
+
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 pt-6 border-t border-slate-100"
+            >
+              <div>
+                <label
+                  class="block text-xs font-semibold uppercase text-slate-400 mb-1.5"
+                  >Registered Email Address</label
+                >
+                <div class="flex items-center gap-3 text-slate-800 font-medium">
+                  <i data-lucide="mail" class="w-4 h-4 text-slate-400"></i>
+                  <span id="profile-email">loading@transitops.com</span>
+                </div>
+              </div>
+              <div>
+                <label
+                  class="block text-xs font-semibold uppercase text-slate-400 mb-1.5"
+                  >Account Created At</label
+                >
+                <div class="flex items-center gap-3 text-slate-800 font-medium">
+                  <i data-lucide="clock" class="w-4 h-4 text-slate-400"></i>
+                  <span id="profile-created">YYYY-MM-DD</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- App Configuration Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Regional & Formatting -->
+          <section class="premium-card p-6">
+            <div
+              class="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4"
+            >
+              <div
+                class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center"
+              >
+                <i data-lucide="globe" class="w-4 h-4"></i>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900">
+                Regional Formatting
+              </h3>
+            </div>
+
+            <div class="space-y-5">
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2"
+                  >Display Currency</label
+                >
+                <select
+                  class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 font-medium"
+                >
+                  <option value="USD">USD ($) - US Dollar</option>
+                  <option value="INR" selected>INR (₹) - Indian Rupee</option>
+                  <option value="EUR">EUR (€) - Euro</option>
+                  <option value="GBP">GBP (£) - British Pound</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2"
+                  >Distance Metric</label
+                >
+                <select
+                  class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 font-medium"
+                >
+                  <option value="KM" selected>Kilometers (Km)</option>
+                  <option value="MI">Miles (Mi)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2"
+                  >Timezone</label
+                >
+                <select
+                  class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-sky-500 font-medium"
+                >
+                  <option value="IST" selected>Asia/Kolkata (IST)</option>
+                  <option value="UTC">Universal Time Coordinated (UTC)</option>
+                  <option value="EST">America/New_York (EST)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+              <button
+                class="bg-sky-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-sky-700 transition-colors"
+              >
+                Save Regional Settings
+              </button>
+            </div>
+          </section>
+
+          <!-- Notifications & Security -->
+          <section class="premium-card p-6 flex flex-col">
+            <div
+              class="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4"
+            >
+              <div
+                class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center"
+              >
+                <i data-lucide="bell-ring" class="w-4 h-4"></i>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900">
+                Notifications & Alerts
+              </h3>
+            </div>
+
+            <div class="space-y-6 flex-1">
+              <!-- Toggle Item -->
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="text-sm font-bold text-slate-800">Email Alerts</h4>
+                  <p class="text-xs text-slate-500 mt-0.5">
+                    Receive daily summary reports.
+                  </p>
+                </div>
+                <div
+                  class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
+                >
+                  <input
+                    type="checkbox"
+                    name="toggle1"
+                    id="toggle1"
+                    checked
+                    class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 border-slate-200 appearance-none cursor-pointer transition-all duration-200 z-10"
+                  />
+                  <label
+                    for="toggle1"
+                    class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-200 cursor-pointer transition-colors duration-200"
+                  ></label>
+                </div>
+              </div>
+
+              <!-- Toggle Item -->
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="text-sm font-bold text-slate-800">
+                    Maintenance Warnings
+                  </h4>
+                  <p class="text-xs text-slate-500 mt-0.5">
+                    Alert when odometer nears service cap.
+                  </p>
+                </div>
+                <div
+                  class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
+                >
+                  <input
+                    type="checkbox"
+                    name="toggle2"
+                    id="toggle2"
+                    checked
+                    class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 border-slate-200 appearance-none cursor-pointer transition-all duration-200 z-10"
+                  />
+                  <label
+                    for="toggle2"
+                    class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-200 cursor-pointer transition-colors duration-200"
+                  ></label>
+                </div>
+              </div>
+
+              <!-- Toggle Item -->
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="text-sm font-bold text-slate-800">
+                    Driver License Expiry
+                  </h4>
+                  <p class="text-xs text-slate-500 mt-0.5">
+                    Notify 30 days before compliance expires.
+                  </p>
+                </div>
+                <div
+                  class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
+                >
+                  <input
+                    type="checkbox"
+                    name="toggle3"
+                    id="toggle3"
+                    checked
+                    class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 border-slate-200 appearance-none cursor-pointer transition-all duration-200 z-10"
+                  />
+                  <label
+                    for="toggle3"
+                    class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-200 cursor-pointer transition-colors duration-200"
+                  ></label>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      document.getElementById("current-date").textContent =
+        new Date().toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        });
+
+      window.addEventListener("DOMContentLoaded", async () => {
+        currentUser = await checkAuth();
+
+        if (currentUser) {
+          // Inject data into Profile Card
+          const initials = currentUser.name
+            ? currentUser.name.substring(0, 2).toUpperCase()
+            : currentUser.email.substring(0, 2).toUpperCase();
+
+          document.getElementById("user-badge").textContent = initials;
+          document.getElementById("profile-avatar").textContent = initials;
+
+          document.getElementById("profile-name").textContent =
+            currentUser.name || "System User";
+          document.getElementById("profile-role").textContent =
+            currentUser.role || "Operator";
+          document.getElementById("profile-email").textContent =
+            currentUser.email;
+
+          if (currentUser.created_at) {
+            const d = new Date(currentUser.created_at);
+            document.getElementById("profile-created").textContent =
+              d.toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              });
+          }
+        }
+
+        lucide.createIcons();
+      });
+
+      document.getElementById("logout-btn").addEventListener("click", () => {
+        window.location.href = "login.html";
+      });
+    </script>
+  </body>
+</html>

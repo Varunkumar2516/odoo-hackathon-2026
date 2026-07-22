@@ -7,6 +7,8 @@ from backend.database import get_db
 from backend import oauth2
 router = APIRouter(prefix="/api", tags=["Trips"])
 
+
+
 # for Validation
 def validate_trip(vehicle, driver, cargo_weight):
     if not vehicle:
@@ -30,6 +32,41 @@ def validate_trip(vehicle, driver, cargo_weight):
             detail = f"Maximum load is {vehicle.max_load_capacity_kg} kg."
         )
     
+
+# to get the Trips which are dispatched 
+@router.get("/trips/dispatched")
+def get_dispatched_trips(
+    db: Session = Depends(get_db),
+    current_user : models.UserModel = Depends(oauth2.get_current_user)
+):
+
+    trips = (
+        db.query(models.Trip)
+        .filter(models.Trip.status == "Dispatched")
+        .all()
+    )
+
+    result = []
+
+    for trip in trips:
+
+        result.append({
+
+            "trip_id": trip.trip_id,
+
+            "vehicle_id": trip.vehicle_id,
+
+            "vehicle": trip.vehicle.registration_number,
+
+            "driver": trip.driver.user.name,
+
+            "source": trip.source,
+
+            "destination": trip.destination
+
+        })
+
+    return result
 
 # get Users
 @router.get("/trips", response_model=list[schemamodels.TripResponse])
@@ -63,6 +100,8 @@ def get_trips(
             "cargo_weight_kg": trip.cargo_weight_kg,
 
             "planned_distance_km": trip.planned_distance_km,
+
+            "estimated_cost": trip.estimated_cost,
 
             "status": trip.status,
 
@@ -112,6 +151,7 @@ def create_trip(
 
     planned_distance_km=data.planned_distance_km,
 
+    estimated_cost= data.estimated_cost,
     status="Draft"
 )
 
@@ -134,7 +174,7 @@ def create_trip(
 
     "cargo_weight_kg": trip.cargo_weight_kg,
     "planned_distance_km": trip.planned_distance_km,
-
+    "estimated_cost": trip.estimated_cost,
     "status": trip.status,
 
     "created_at": trip.created_at
@@ -199,6 +239,8 @@ def update_trip(
 
     trip.planned_distance_km = data.planned_distance_km
 
+    trip.estimated_cost = data.estimated_cost
+
     db.commit()
 
     db.refresh(trip)
@@ -220,6 +262,7 @@ def update_trip(
         "cargo_weight_kg": trip.cargo_weight_kg,
 
         "planned_distance_km": trip.planned_distance_km,
+        "estimated_cost": trip.estimated_cost,
 
         "status": trip.status,
 
@@ -257,7 +300,6 @@ def delete_trip( trip_id: str,db: Session = Depends(get_db),current_user: models
     db.delete(trip)
     db.commit()
     return {''}
-
 
 
 
@@ -313,6 +355,7 @@ def dispatch_trip(
 # complete Api
 @router.patch("/trips/{trip_id}/complete")
 def complete_trip(
+
     trip_id: str,
     db: Session = Depends(get_db),
     current_user: models.UserModel = Depends(oauth2.get_current_user)

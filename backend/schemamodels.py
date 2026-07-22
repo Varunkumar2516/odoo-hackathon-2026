@@ -127,7 +127,7 @@ class TripCreate(BaseModel):
     cargo_weight_kg: float
 
     planned_distance_km: float
-
+    estimated_cost: float
     status: Literal[
         "Draft",
         "Dispatched",
@@ -147,7 +147,7 @@ class TripUpdate(BaseModel):
     driver_id: int
 
     cargo_weight_kg: float
-
+    estimated_cost: float
     planned_distance_km: float
 
 class TripResponse(BaseModel):
@@ -161,7 +161,7 @@ class TripResponse(BaseModel):
     vehicle_id: int
 
     driver_id: int
-
+    estimated_cost: float
     vehicle: str
 
     driver: str
@@ -233,8 +233,10 @@ class MaintenanceResponse(BaseModel):
 
 
 class FuelCreate(BaseModel):
+    trip_id: Optional[str]=None
+    maintenance_id: Optional[int]=None
 
-    vehicle_id: int
+    vehicle_id:Optional[int] = None
 
     date: date
 
@@ -244,8 +246,10 @@ class FuelCreate(BaseModel):
 
 
 class FuelUpdate(BaseModel):
-
-    vehicle_id: int
+    trip_id: Optional[str]=None
+    maintenance_id: Optional[int]=None
+    
+    vehicle_id:Optional[int] = None
 
     date: date
 
@@ -256,20 +260,23 @@ class FuelUpdate(BaseModel):
 
 class FuelResponse(BaseModel):
 
-    fuel_log_id: int
+    fuel_log_id:int
 
-    vehicle_id: int
+    vehicle_id:int
 
-    vehicle: str
-    
+    vehicle:str
+
     name_model:str
-    
-    date: date
 
-    liters_filled: float
+    trip_id: Optional[str] = None
 
-    fuel_cost: float
+    maintenance_id: Optional[int] = None
 
+    date:date
+
+    liters_filled:float
+
+    fuel_cost:float
     model_config = ConfigDict(
         from_attributes=True
     )

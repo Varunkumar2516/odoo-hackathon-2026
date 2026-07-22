@@ -1,7 +1,116 @@
 let cache = [];
 
 let vehiclesMap = {};
+let activeTrips = [];
 
+let maintenanceCache = [];
+const contextRadios = document.querySelectorAll('input[name="fuel-context"]');
+
+function updateFuelContext() {
+  const value = document.querySelector(
+    'input[name="fuel-context"]:checked',
+  ).value;
+
+  document.getElementById("general-section").classList.add("hidden");
+
+  document.getElementById("trip-section").classList.add("hidden");
+
+  document.getElementById("maintenance-section").classList.add("hidden");
+
+  if (value === "general") {
+    document.getElementById("general-section").classList.remove("hidden");
+  }
+
+  if (value === "trip") {
+    document.getElementById("trip-section").classList.remove("hidden");
+  }
+
+  if (value === "maintenance") {
+    document.getElementById("maintenance-section").classList.remove("hidden");
+  }
+}
+async function loadDispatchedTrips() {
+  const res = await fetch(`${host}/api/trips/dispatched`, {
+    credentials: "include",
+  });
+
+  activeTrips = await res.json();
+
+  const select = document.getElementById("f-trip");
+
+  select.innerHTML = `<option value="">Select Trip</option>`;
+
+  activeTrips.forEach((trip) => {
+    select.innerHTML += `
+
+            <option value="${trip.trip_id}">
+
+                ${trip.trip_id}
+                -
+                ${trip.source}
+                →
+                ${trip.destination}
+
+            </option>
+
+        `;
+  });
+}
+document.getElementById("f-trip").addEventListener("change", function () {
+  const trip = activeTrips.find((t) => t.trip_id === this.value);
+
+  if (!trip) {
+    document.getElementById("trip-vehicle").value = "";
+
+    return;
+  }
+
+  document.getElementById("trip-vehicle").value = trip.vehicle;
+});
+
+contextRadios.forEach((r) => {
+  r.addEventListener("change", updateFuelContext);
+});
+
+async function loadMaintenance() {
+  const res = await fetch(`${host}/api/maintenance/active`, {
+    credentials: "include",
+  });
+
+  maintenanceCache = await res.json();
+  console.log(res.status);
+  const select = document.getElementById("f-maintenance");
+
+  select.innerHTML = `<option>Select Maintenance</option>`;
+
+  maintenanceCache.forEach((item) => {
+    select.innerHTML += `
+
+            <option
+            value="${item.maintenance_id}">
+
+                MNT-${item.maintenance_id}
+
+                (${item.service_type})
+
+            </option>
+
+        `;
+  });
+}
+document
+  .getElementById("f-maintenance")
+  .addEventListener("change", function () {
+    const item = maintenanceCache.find((m) => m.maintenance_id == this.value);
+
+    if (!item) {
+      document.getElementById("maintenance-vehicle").value = "";
+
+      return;
+    }
+
+    document.getElementById("maintenance-vehicle").value = item.vehicle;
+  });
 async function loadVehicles() {
   try {
     const res = await fetch(`${host}/api/vehicles`, {
@@ -89,7 +198,7 @@ function renderTable(data = cache) {
   if (data.length === 0) {
     tbody.innerHTML = `
             <tr>
-                <td colspan="7" class="text-center py-8">
+                <td colspan="8" class="text-center py-8">
                     No fuel logs found.
                 </td>
             </tr>
@@ -99,6 +208,32 @@ function renderTable(data = cache) {
   }
 
   data.forEach((log) => {
+    let context = `
+        <span class="px-2 py-1 rounded-full bg-slate-100 text-slate-600 text-xs">
+        General
+        </span>
+        `;
+
+    if (log.trip_id) {
+      context = `
+            <span class="px-2 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-semibold">
+                Trip
+            </span>
+            <div class="text-xs text-slate-500 mt-1">
+                ${log.vehicle}
+                ${log.trip_id}
+            </div>
+            `;
+    } else if (log.maintenance_id) {
+      context = `
+            <span class="px-2 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-semibold">
+                Maintenance
+            </span>
+            <div class="text-xs text-slate-500 mt-1">
+                MNT-${log.maintenance_id}
+            </div>
+            `;
+    }
     const costPerLiter =
       log.liters_filled > 0 ? log.fuel_cost / log.liters_filled : 0;
 
@@ -113,6 +248,9 @@ function renderTable(data = cache) {
             <td class="px-6 py-4">
                 ${log.vehicle} 
                 ${log.name_model}
+            </td>
+            <td class="px-6 py-4">
+                ${context}
             </td>
 
             <td class="px-6 py-4">
@@ -184,10 +322,19 @@ function openModal(id = null) {
 
   modal.classList.remove("hidden");
 
+  // -----------------------------
+  // ADD MODE
+  // -----------------------------
   if (!id) {
     document.getElementById("modal-title").textContent = "Record Fuel";
 
     document.getElementById("form-id").value = "";
+
+    document.querySelector(
+      'input[name="fuel-context"][value="general"]',
+    ).checked = true;
+
+    updateFuelContext();
 
     document.getElementById("f-date").value = new Date()
       .toISOString()
@@ -196,13 +343,56 @@ function openModal(id = null) {
     return;
   }
 
+  // -----------------------------
+  // EDIT MODE
+  // -----------------------------
   const log = cache.find((item) => item.fuel_log_id == id);
+
+  if (!log) return;
 
   document.getElementById("modal-title").textContent = "Edit Fuel Log";
 
   document.getElementById("form-id").value = log.fuel_log_id;
 
-  document.getElementById("f-vehicle").value = log.vehicle_id;
+  // -----------------------------
+  // Select correct context
+  // -----------------------------
+  if (log.maintenance_id) {
+    document.querySelector(
+      'input[name="fuel-context"][value="maintenance"]',
+    ).checked = true;
+
+    updateFuelContext();
+
+    document.getElementById("f-maintenance").value = log.maintenance_id;
+
+    const maintenance = maintenanceCache.find(
+      (m) => m.maintenance_id == log.maintenance_id,
+    );
+
+    document.getElementById("maintenance-vehicle").value = maintenance
+      ? maintenance.vehicle
+      : "";
+  } else if (log.trip_id) {
+    document.querySelector('input[name="fuel-context"][value="trip"]').checked =
+      true;
+
+    updateFuelContext();
+
+    document.getElementById("f-trip").value = log.trip_id;
+
+    const trip = activeTrips.find((t) => t.trip_id == log.trip_id);
+
+    document.getElementById("trip-vehicle").value = trip ? trip.vehicle : "";
+  } else {
+    document.querySelector(
+      'input[name="fuel-context"][value="general"]',
+    ).checked = true;
+
+    updateFuelContext();
+
+    document.getElementById("f-vehicle").value = log.vehicle_id;
+  }
 
   document.getElementById("f-date").value = log.date;
 
@@ -229,8 +419,14 @@ async function saveFuelLog(e) {
 
   const id = document.getElementById("form-id").value;
 
-  const payload = {
-    vehicle_id: Number(document.getElementById("f-vehicle").value),
+  const context = document.querySelector(
+    'input[name="fuel-context"]:checked',
+  ).value;
+
+  let payload = {
+    vehicle_id: null,
+
+    trip_id: null,
 
     date: document.getElementById("f-date").value,
 
@@ -238,7 +434,15 @@ async function saveFuelLog(e) {
 
     fuel_cost: Number(document.getElementById("f-cost").value),
   };
-
+  if (context === "general") {
+    payload.vehicle_id = Number(document.getElementById("f-vehicle").value);
+  } else if (context === "trip") {
+    payload.trip_id = document.getElementById("f-trip").value;
+  } else {
+    payload.maintenance_id = Number(
+      document.getElementById("f-maintenance").value,
+    );
+  }
   const url = id ? `${host}/api/fuel/${id}` : `${host}/api/fuel`;
 
   const method = id ? "PUT" : "POST";

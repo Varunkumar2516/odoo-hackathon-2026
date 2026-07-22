@@ -93,7 +93,7 @@ async function loadData() {
     }
 
     tripsCache = await response.json();
-
+    console.log(tripsCache);
     renderTable(tripsCache);
 
     renderStats(tripsCache);
@@ -301,6 +301,10 @@ function renderTable(data) {
                 <div class="text-xs text-slate-500 mt-1">
                     ${Number(trip.planned_distance_km).toLocaleString()} km
                 </div>
+      
+                <div class="text-xs font-semibold text-emerald-600 mt-1">
+                    ₹${Number(trip.estimated_cost).toLocaleString("en-IN")}
+                </div>
 
             </td>
 
@@ -369,6 +373,7 @@ function openModal(id = null) {
     document.getElementById("f-driver").value = t.driver_id;
     document.getElementById("f-cargo").value = t.cargo_weight_kg;
     document.getElementById("f-dist").value = t.planned_distance_km;
+    document.getElementById("f-estimated-cost").value = t.estimated_cost;
     document.getElementById("f-status").value = t.status;
   } else {
     document.getElementById("modal-title").textContent = "Dispatch New Trip";
@@ -381,6 +386,7 @@ function openModal(id = null) {
       "-" +
       Math.floor(Math.random() * 1000);
     idInput.readOnly = false;
+    document.getElementById("f-estimated-cost").value = "";
   }
 }
 
@@ -442,6 +448,9 @@ form.addEventListener("submit", async (e) => {
     driver_id: parseInt(document.getElementById("f-driver").value),
     cargo_weight_kg: parseFloat(document.getElementById("f-cargo").value),
     planned_distance_km: parseFloat(document.getElementById("f-dist").value),
+    estimated_cost: parseFloat(
+      document.getElementById("f-estimated-cost").value,
+    ),
   };
 
   try {

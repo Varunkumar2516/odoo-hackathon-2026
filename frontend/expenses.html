@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TransitOps — Fleet Expenses</title>
+  
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+    h1, h2, h3, .font-display { font-family: 'Outfit', sans-serif; }
+    
+    .nav-item { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    .nav-item:hover { background: #F1F5F9; color: #0F172A; padding-left: 1rem; }
+    .nav-item.active { background: linear-gradient(90deg, #E0F2FE 0%, #F0F9FF 100%); color: #0288D1; font-weight: 600; border-left: 4px solid #0288D1; padding-left: 1rem; }
+
+    .premium-card { background: #ffffff; border: 1px solid #E2E8F0; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01); }
+    .modal-backdrop { background-color: rgba(15, 23, 42, 0.3); backdrop-filter: blur(4px); }
+
+    .toast { position: fixed; bottom: 2rem; right: 2rem; padding: 0.75rem 1.5rem; background: #333; color: #fff; border-radius: 8px; font-size: 0.9rem; z-index: 2000; animation: slideIn 0.2s ease-out; }
+    .toast.error { background: #E53E3E; }
+    .toast.success { background: #38A169; }
+
+    @keyframes slideIn { from { transform: translateY(1rem); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  </style>
+</head>
+<body class="min-h-screen flex w-full text-slate-700">
+
+  <script>
+    async function checkAuth() {
+        try {
+            const res = await fetch("http://127.0.0.1:8000/me", { credentials: "include" });
+            if (!res.ok) return { email: "local.dev@transitops.com" }; 
+            return await res.json();
+        } catch (err) {
+            return { email: "local.dev@transitops.com" }; 
+        }
+    }
+
+    function setActiveSidebar() {
+        const currentPage = window.location.pathname.split("/").pop() || "expenses.html";
+        document.querySelectorAll(".nav-item").forEach(item => {
+            item.classList.remove("active");
+            if (item.getAttribute("href") === currentPage) {
+                item.classList.add("active");
+            }
+        });
+    }
+  </script>
+
+  <aside class="canva-sidebar w-64 min-h-screen flex-shrink-0 border-r border-slate-200 bg-white flex flex-col justify-between hidden md:flex">
+    <div id="sidebar"></div>
+  </aside>
+
+  <div class="flex-1 flex flex-col min-w-0">
+    <header class="border-b border-slate-200 bg-white px-8 py-5 flex items-center justify-between sticky top-0 z-20">
+      <div class="flex flex-col">
+        <h2 class="font-bold text-2xl text-slate-900">Fleet Expenses</h2>
+        <p class="text-xs text-slate-400 mt-0.5">Track tolls, maintenance-linked costs, and general operational expenses.</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="hidden sm:flex items-center gap-2 text-sm text-slate-600 bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-full font-medium">
+          <i data-lucide="calendar" class="w-4 h-4 text-slate-500"></i>
+          <span id="current-date">Today</span>
+        </span>
+        <div class="flex items-center gap-2 pl-3 sm:border-l border-slate-200">
+          <div id="user-badge" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm border border-slate-200">OP</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 p-8 space-y-8 overflow-y-auto">
+      
+      <!-- Metrics -->
+      <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="premium-card p-6 flex items-center justify-between">
+          <div>
+            <span class="text-xs font-semibold uppercase text-slate-400">Total Spent</span>
+            <p id="stat-total" class="text-3xl font-bold text-slate-900 mt-1">--</p>
+          </div>
+          <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600"><i data-lucide="wallet" class="w-6 h-6"></i></div>
+        </div>
+        <div class="premium-card p-6 flex items-center justify-between">
+          <div>
+            <span class="text-xs font-semibold uppercase text-slate-400">Tolls Paid</span>
+            <p id="stat-tolls" class="text-3xl font-bold text-sky-600 mt-1">--</p>
+          </div>
+          <div class="w-12 h-12 bg-sky-50 rounded-xl flex items-center justify-center text-sky-600"><i data-lucide="boom-box" class="w-6 h-6"></i></div>
+        </div>
+        <div class="premium-card p-6 flex items-center justify-between">
+          <div>
+            <span class="text-xs font-semibold uppercase text-slate-400">Maint. Linked</span>
+            <p id="stat-maint" class="text-3xl font-bold text-rose-600 mt-1">--</p>
+          </div>
+          <div class="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-rose-600"><i data-lucide="wrench" class="w-6 h-6"></i></div>
+        </div>
+        <div class="premium-card p-6 flex items-center justify-between">
+          <div>
+            <span class="text-xs font-semibold uppercase text-slate-400">Other Exp.</span>
+            <p id="stat-other" class="text-3xl font-bold text-amber-600 mt-1">--</p>
+          </div>
+          <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600"><i data-lucide="receipt" class="w-6 h-6"></i></div>
+        </div>
+      </section>
+
+      <section class="premium-card p-6 flex flex-col min-h-[500px]">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+          <div class="flex flex-1 flex-col sm:flex-row gap-3">
+            <div class="relative flex-1 max-w-md">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><i data-lucide="search" class="w-4 h-4"></i></span>
+              <input id="search-input" type="text" placeholder="Search vehicle or trip ID..." class="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-sky-500" />
+            </div>
+            <select id="type-filter" class="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-600 focus:outline-none focus:border-sky-500">
+              <option value="ALL">All Categories</option>
+              <option value="Toll">Toll</option>
+              <option value="Maintenance Linked">Maintenance Linked</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          
+          <button id="add-btn" class="bg-gradient-to-r from-sky-600 to-emerald-500 text-white font-semibold text-sm px-5 py-2.5 rounded-full hover:opacity-90 flex items-center justify-center gap-2 shadow-sm transition-all flex-shrink-0">
+            <i data-lucide="plus" class="w-4 h-4"></i> Log Expense
+          </button>
+        </div>
+
+        <div class="overflow-x-auto flex-1">
+          <table class="w-full text-sm text-left text-slate-600">
+            <thead class="text-xs uppercase text-slate-400 tracking-wider bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th class="py-4 px-6 rounded-tl-lg">Exp ID</th>
+                <th class="py-4 px-6">Date</th>
+                <th class="py-4 px-6">Vehicle</th>
+                <th class="py-4 px-6">Trip ID (Optional)</th>
+                <th class="py-4 px-6">Expense Type</th>
+                <th class="py-4 px-6 text-right">Amount ($)</th>
+                <th class="py-4 px-6 text-center rounded-tr-lg">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="table-body" class="divide-y divide-slate-100">
+              <tr><td colspan="7" class="p-8 text-center text-slate-400">Loading expense logs...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+    <div class="fixed inset-0 modal-backdrop" id="modal-backdrop-bg"></div>
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 relative z-10 transform transition-all shadow-2xl">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+            <h3 id="modal-title" class="text-xl font-bold text-slate-900">Log Expense</h3>
+            <p class="text-xs text-slate-400 mt-1">Record miscellaneous fleet costs.</p>
+        </div>
+        <button id="close-modal-btn" type="button" class="p-1 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="data-form" class="space-y-4">
+        <input type="hidden" id="form-id" value="" />
+
+        <div>
+            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Target Vehicle (Required)</label>
+            <select id="f-vehicle" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-sky-500 font-semibold text-slate-800">
+                <option value="">Loading vehicles...</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Link to Trip (Optional)</label>
+            <select id="f-trip" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-sky-500 font-medium text-slate-600">
+                <option value="">No specific trip (General Expense)</option>
+                <!-- Filled dynamically -->
+            </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Expense Type</label>
+            <select id="f-type" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-sky-500">
+                <option value="Toll">Toll</option>
+                <option value="Maintenance Linked">Maintenance Linked</option>
+                <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Date</label>
+            <input type="date" id="f-date" required class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-sky-500" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1">Total Amount ($)</label>
+          <input type="number" id="f-amount" required min="0" step="0.01" placeholder="45.50" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-sky-500" />
+        </div>
+
+        <div class="pt-4 mt-2 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button type="button" id="cancel-modal-btn" class="px-5 py-2 text-sm font-semibold border border-slate-200 rounded-full text-slate-600 hover:bg-slate-50 transition-colors">Cancel</button>
+          <button type="submit" class="px-6 py-2 text-sm font-semibold bg-gradient-to-r from-sky-600 to-emerald-500 text-white rounded-full hover:opacity-90 shadow-sm transition-opacity">Save Expense</button>
+        </div>
+      </form>
+    </div>
+  </div>
+<script src="/frontend/staticFiles/script.js"></script>
+  <script src="/frontend/staticFiles/drivers.js"></script>
+
+  <script>
+    (async () => {
+        await loading();
+
+        document.getElementById("current-date").textContent =
+          new Date().toLocaleDateString("en-GB", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          });
+
+      })();
+
+    (function() {
+      
+      let cache = [];
+      let vehiclesMap = {};
+      let tripsList = [];
+
+     
+      async function fetchDropdownMappings() {
+          try {
+              // Fetch Vehicles
+              const vRes = await fetch(`${host}/vehicles/`, { credentials: "include" });
+              if (vRes.ok) {
+                  const vehicles = await vRes.json();
+                  const vSelect = document.getElementById('f-vehicle');
+                  vSelect.innerHTML = '<option value="">Select a vehicle...</option>';
+                  vehicles.forEach(v => {
+                      vehiclesMap[v.vehicle_id] = v;
+                      vSelect.innerHTML += `<option value="${v.vehicle_id}">${v.registration_number} - ${v.name_model}</option>`;
+                  });
+              }
+
+              // Fetch Trips
+              const tRes = await fetch(`${host}/trips/`, { credentials: "include" });
+              if (tRes.ok) {
+                  tripsList = await tRes.json();
+                  const tSelect = document.getElementById('f-trip');
+                  tSelect.innerHTML = '<option value="">No specific trip (General Expense)</option>';
+                  tripsList.forEach(t => {
+                      tSelect.innerHTML += `<option value="${t.trip_id}">${t.trip_id} (${t.source} -> ${t.destination})</option>`;
+                  });
+              }
+          } catch(err) {
+              console.warn("Could not load mappings. Falling back to Mock data.");
+              document.getElementById('f-vehicle').innerHTML = '<option value="1">DL-01-AB-1234</option><option value="2">MH-12-CD-5678</option>';
+              document.getElementById('f-trip').innerHTML = '<option value="">No Trip</option><option value="TRP-4401">TRP-4401</option>';
+              vehiclesMap[1] = { registration_number: "DL-01-AB-1234", name_model: "Mock Truck" };
+              vehiclesMap[2] = { registration_number: "MH-12-CD-5678", name_model: "Mock Van" };
+          }
+      }
+
+      async function loadData() {
+        try {
+          const response = await fetch(`${host}/expenses/`, { credentials: "include" });
+          if (response.ok) {
+            cache = await response.json();
+          } else throw new Error("API Failure");
+        } catch (err) {
+          console.warn("Backend offline, using mocks");
+          cache = [...mockData];
+          showToast('Offline Mode Active', 'error');
+        }
+        renderTable(cache);
+        renderStats(cache);
+      }
+
+      function renderStats(data) {
+        const total = data.reduce((acc, curr) => acc + curr.amount, 0);
+        document.getElementById('stat-total').textContent = `$${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        
+        const tolls = data.filter(i => i.expense_type === 'Toll').reduce((acc, curr) => acc + curr.amount, 0);
+        document.getElementById('stat-tolls').textContent = `$${tolls.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+        const maint = data.filter(i => i.expense_type === 'Maintenance Linked').reduce((acc, curr) => acc + curr.amount, 0);
+        document.getElementById('stat-maint').textContent = `$${maint.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+        const other = data.filter(i => i.expense_type === 'Other').reduce((acc, curr) => acc + curr.amount, 0);
+        document.getElementById('stat-other').textContent = `$${other.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      }
+
+      function renderTable(data) {
+        const tbody = document.getElementById('table-body');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No expense records found.</td></tr>`;
+          return;
+        }
+
+        data.forEach(exp => {
+          const vehicleReg = vehiclesMap[exp.vehicle_id] ? vehiclesMap[exp.vehicle_id].registration_number : `Vehicle #${exp.vehicle_id}`;
+          const tripDisplay = exp.trip_id ? `<span class="font-mono text-sky-600 bg-sky-50 px-2 py-0.5 rounded text-xs border border-sky-100">${escapeHTML(exp.trip_id)}</span>` : '<span class="text-slate-400 italic text-xs">General</span>';
+          
+          let typeIcon = 'receipt';
+          let typeColor = 'text-amber-600';
+          if(exp.expense_type === 'Toll') { typeIcon = 'boom-box'; typeColor = 'text-sky-600'; }
+          if(exp.expense_type === 'Maintenance Linked') { typeIcon = 'wrench'; typeColor = 'text-rose-600'; }
+
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-50/70 transition-colors group';
+          tr.innerHTML = `
+            <td class="py-4 px-6 font-semibold text-slate-900 font-mono text-xs">
+              EXP-${exp.expense_id.toString().padStart(4, '0')}
+            </td>
+            <td class="px-6 py-4 text-xs font-medium text-slate-600">
+               <i data-lucide="calendar" class="w-3 h-3 inline mr-1 text-slate-400"></i>${escapeHTML(exp.date)}
+            </td>
+            <td class="px-6 py-4">
+              <span class="text-xs font-semibold bg-slate-100 border border-slate-200 px-2 py-0.5 rounded flex w-fit items-center gap-1.5 text-slate-700"><i data-lucide="truck" class="w-3 h-3"></i> ${escapeHTML(vehicleReg)}</span>
+            </td>
+            <td class="px-6 py-4">${tripDisplay}</td>
+            <td class="px-6 py-4 text-sm font-medium ${typeColor} flex items-center gap-1.5">
+               <i data-lucide="${typeIcon}" class="w-4 h-4"></i> ${escapeHTML(exp.expense_type)}
+            </td>
+            <td class="px-6 py-4 text-right font-mono font-bold text-slate-800">
+              $${Number(exp.amount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits:2})}
+            </td>
+            <td class="px-6 py-4 text-center">
+              <div class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button class="edit-btn p-1.5 rounded-lg text-slate-500 hover:bg-white hover:text-sky-600 transition-all border border-transparent hover:border-slate-200" data-id="${exp.expense_id}"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                <button class="delete-btn p-1.5 rounded-lg text-slate-500 hover:bg-white hover:text-rose-600 transition-all border border-transparent hover:border-slate-200" data-id="${exp.expense_id}"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        tbody.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', () => openModal(b.dataset.id)));
+        tbody.querySelectorAll('.delete-btn').forEach(b => b.addEventListener('click', () => deleteData(b.dataset.id)));
+        lucide.createIcons();
+      }
+
+      function escapeHTML(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t));
+      }
+
+      document.getElementById('search-input').addEventListener('input', applyFilters);
+      document.getElementById('type-filter').addEventListener('change', applyFilters);
+
+      function applyFilters() {
+        const q = document.getElementById('search-input').value.toLowerCase().trim();
+        const t = document.getElementById('type-filter').value;
+        const filtered = cache.filter(item => {
+          const matchQ = (vehiclesMap[item.vehicle_id] && vehiclesMap[item.vehicle_id].registration_number.toLowerCase().includes(q)) || 
+                         (item.trip_id && item.trip_id.toLowerCase().includes(q));
+          const matchT = t === 'ALL' || item.expense_type === t;
+          return matchQ && matchT;
+        });
+        renderTable(filtered);
+      }
+
+      const modal = document.getElementById('modal');
+      const form = document.getElementById('data-form');
+
+      function openModal(id = null) {
+        form.reset();
+        modal.classList.remove('hidden');
+
+        if (id) {
+          const t = cache.find(i => i.expense_id == id);
+          document.getElementById('modal-title').textContent = 'Edit Expense';
+          document.getElementById('form-id').value = t.expense_id;
+          
+          document.getElementById('f-vehicle').value = t.vehicle_id;
+          document.getElementById('f-trip').value = t.trip_id || "";
+          document.getElementById('f-type').value = t.expense_type;
+          
+          let formattedDate = t.date;
+          if(formattedDate && formattedDate.includes('T')) formattedDate = formattedDate.split('T')[0];
+          document.getElementById('f-date').value = formattedDate;
+
+          document.getElementById('f-amount').value = t.amount;
+        } else {
+          document.getElementById('modal-title').textContent = 'Log Expense';
+          document.getElementById('form-id').value = "";
+          document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+        }
+      }
+
+      function closeModal() { modal.classList.add('hidden'); }
+      document.getElementById('add-btn').addEventListener('click', () => openModal());
+      document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+      document.getElementById('cancel-modal-btn').addEventListener('click', closeModal);
+
+      async function deleteData(id) {
+        if (!confirm(`Permanently delete expense EXP-${id.padStart(4, '0')}?`)) return;
+        try {
+          const res = await fetch(`${host}/expenses/${id}`, { method: 'DELETE', credentials: "include" });
+          if (!res.ok) throw new Error('Delete failed');
+          cache = cache.filter(i => i.expense_id != id);
+          showToast('Expense deleted', 'success');
+        } catch (err) {
+          cache = cache.filter(i => i.expense_id != id);
+          showToast('Deleted locally', 'info');
+        }
+        renderTable(cache);
+        renderStats(cache);
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const rawId = document.getElementById('form-id').value;
+        const isEdit = rawId !== "";
+        const exp_id = isEdit ? parseInt(rawId) : null;
+        
+        const tripVal = document.getElementById('f-trip').value.trim();
+
+        const payload = { 
+            vehicle_id: parseInt(document.getElementById('f-vehicle').value),
+            trip_id: tripVal === "" ? null : tripVal,
+            expense_type: document.getElementById('f-type').value,
+            date: document.getElementById('f-date').value,
+            amount: parseFloat(document.getElementById('f-amount').value)
+        };
+
+        try {
+          const url = isEdit ? `${host}/expenses/${exp_id}` : `${host}/expenses`;
+          const res = await fetch(url, {
+              method: isEdit ? "PUT" : "POST",
+              credentials: "include",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error('API Sync Failed');
+          await loadData();
+          showToast(isEdit ? 'Expense updated' : 'Expense logged', 'success');
+        } catch (err) {
+          if (isEdit) {
+            const i = cache.findIndex(t => t.expense_id == exp_id);
+            if (i > -1) cache[i] = { ...cache[i], ...payload };
+          } else {
+              const newId = cache.length ? Math.max(...cache.map(d => d.expense_id)) + 1 : 1;
+              cache.unshift({ expense_id: newId, ...payload });
+          }
+          showToast('Saved locally (API Offline)', 'error');
+          renderTable(cache);
+          renderStats(cache);
+        }
+        closeModal();
+      });
+
+      document.getElementById("logout-btn").addEventListener("click", () => window.location.href="login.html");
+    })();
+  </script>
+</body>
+</html>
