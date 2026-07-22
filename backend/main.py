@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # 1. Import ALL your route files here
-from backend.routes import trips, maintenance, user, vehicles, drivers,auth
+from backend.routes import trips, maintenance, user, vehicles, drivers,auth,fuel
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from backend import models
@@ -21,7 +21,7 @@ app.include_router(trips.router)
 app.include_router(maintenance.router)
 
 app.include_router(vehicles.router)
-
+app.include_router(fuel.router)
 
 
 
@@ -79,3 +79,7 @@ def trips():
 @app.get('/maintainence')
 def maintainence():
     return FileResponse("frontend/maintainence.html")
+
+@app.get('/fuels')
+def maintainence():
+    return FileResponse("frontend/fuellogs.html")

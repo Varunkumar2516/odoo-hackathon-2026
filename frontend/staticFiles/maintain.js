@@ -35,10 +35,7 @@ function renderStats(data) {
   const totalCost = data.reduce((sum, item) => sum + Number(item.cost), 0);
 
   document.getElementById("stat-cost").textContent =
-    `$${totalCost.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
+    currencyFormatter.format(totalCost);
 }
 function renderTable(data) {
   const tbody = document.getElementById("table-body");
@@ -134,7 +131,7 @@ function renderTable(data) {
 
             <td class="px-6 py-4 font-semibold text-rose-600">
 
-                $${Number(log.cost).toFixed(2)}
+               ${currencyFormatter.format(log.cost)}
 
             </td>
 
@@ -290,9 +287,6 @@ function openModal(id = null) {
   if (id) {
     // FIRST create log
     const log = cache.find((x) => x.maintenance_id == id);
-
-    console.log("Edit ID:", id);
-    console.log("Log:", log);
 
     if (!log) {
       showToast("Maintenance record not found.", "error");

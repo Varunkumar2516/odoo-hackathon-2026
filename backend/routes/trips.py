@@ -143,10 +143,7 @@ def create_trip(
 
 # updating the Trips 
 # only the Drafted Trips can be Edited , Dispatched and Completed trips cannot be edited
-@router.put(
-    "/trips/{trip_id}",
-    response_model=schemamodels.TripResponse
-)
+@router.put("/trips/{trip_id}",response_model=schemamodels.TripResponse)
 def update_trip(
     trip_id: str,
     data: schemamodels.TripUpdate,
@@ -234,11 +231,7 @@ def update_trip(
 
 # delete Trip Api
 @router.delete("/trips/{trip_id}")
-def delete_trip(
-    trip_id: str,
-    db: Session = Depends(get_db),
-    current_user: models.UserModel = Depends(oauth2.get_current_user)
-):
+def delete_trip( trip_id: str,db: Session = Depends(get_db),current_user: models.UserModel = Depends(oauth2.get_current_user)):
     # only Administrators Can Delete the Trips
     if current_user.role not in ["administrators",'admin']:
         raise HTTPException(

@@ -1,5 +1,19 @@
 const host = "http://127.0.0.1:8000";
 let confirmCallback = null;
+
+const currencyFormatter = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+});
+
+function formatCurrency(value) {
+  return new Intl.NumberFormat("en-IN", {
+    notation: "compact",
+    compactDisplay: "short",
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
 function showToast(message, type = "info") {
   const toast = document.createElement("div");
   toast.textContent = message;

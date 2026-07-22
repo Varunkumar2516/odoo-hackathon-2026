@@ -228,6 +228,53 @@ class MaintenanceResponse(BaseModel):
     model_config = ConfigDict(
         from_attributes=True
     )
+
+
+
+
+class FuelCreate(BaseModel):
+
+    vehicle_id: int
+
+    date: date
+
+    liters_filled: float
+
+    fuel_cost: float
+
+
+class FuelUpdate(BaseModel):
+
+    vehicle_id: int
+
+    date: date
+
+    liters_filled: float
+
+    fuel_cost: float
+
+
+class FuelResponse(BaseModel):
+
+    fuel_log_id: int
+
+    vehicle_id: int
+
+    vehicle: str
+    
+    name_model:str
+    
+    date: date
+
+    liters_filled: float
+
+    fuel_cost: float
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )
+
+
 # --- AUTHENTICATION MODELS ---
 
 

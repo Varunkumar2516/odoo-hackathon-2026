@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TransitOps — Fleet Maintenance</title>
+    <title>TransitOps — Fuel Logs</title>
 
     <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
@@ -97,9 +97,11 @@
         class="border-b border-slate-200 bg-white px-8 py-5 flex items-center justify-between sticky top-0 z-20"
       >
         <div class="flex flex-col">
-          <h2 class="font-bold text-2xl text-slate-900">Maintenance Logs</h2>
+          <h2 class="font-bold text-2xl text-slate-900">
+            Fuel Consumption Logs
+          </h2>
           <p class="text-xs text-slate-400 mt-0.5">
-            Track vehicle repairs, routine service logs, and maintenance costs.
+            Monitor fleet fuel expenses and analyze volume metrics.
           </p>
         </div>
         <div class="flex items-center gap-4">
@@ -123,11 +125,12 @@
       </header>
 
       <main class="flex-1 p-8 space-y-8 overflow-y-auto">
+        <!-- Metrics -->
         <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div class="premium-card p-6 flex items-center justify-between">
             <div>
               <span class="text-xs font-semibold uppercase text-slate-400"
-                >Total Records</span
+                >Total Entries</span
               >
               <p id="stat-total" class="text-3xl font-bold text-slate-900 mt-1">
                 --
@@ -136,51 +139,33 @@
             <div
               class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600"
             >
-              <i data-lucide="clipboard-list" class="w-6 h-6"></i>
+              <i data-lucide="list" class="w-6 h-6"></i>
             </div>
           </div>
           <div class="premium-card p-6 flex items-center justify-between">
             <div>
               <span class="text-xs font-semibold uppercase text-slate-400"
-                >Active (In Shop)</span
+                >Total Volume (L)</span
               >
-              <p
-                id="stat-active"
-                class="text-3xl font-bold text-amber-600 mt-1"
-              >
+              <p id="stat-volume" class="text-3xl font-bold text-sky-600 mt-1">
                 --
               </p>
             </div>
             <div
-              class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600"
+              class="w-12 h-12 bg-sky-50 rounded-xl flex items-center justify-center text-sky-600"
             >
-              <i data-lucide="wrench" class="w-6 h-6"></i>
+              <i data-lucide="droplet" class="w-6 h-6"></i>
             </div>
           </div>
           <div class="premium-card p-6 flex items-center justify-between">
             <div>
               <span class="text-xs font-semibold uppercase text-slate-400"
-                >Closed (Resolved)</span
+                >Total Expense (₹)</span
               >
               <p
-                id="stat-closed"
-                class="text-3xl font-bold text-emerald-600 mt-1"
+                id="stat-expense"
+                class="text-3xl font-bold text-rose-600 mt-1"
               >
-                --
-              </p>
-            </div>
-            <div
-              class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600"
-            >
-              <i data-lucide="check-circle-2" class="w-6 h-6"></i>
-            </div>
-          </div>
-          <div class="premium-card p-6 flex items-center justify-between">
-            <div>
-              <span class="text-xs font-semibold uppercase text-slate-400"
-                >Total Cost (₹)</span
-              >
-              <p id="stat-cost" class="text-3xl font-bold text-rose-600 mt-1">
                 --
               </p>
             </div>
@@ -188,6 +173,21 @@
               class="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-rose-600"
             >
               <i data-lucide="banknote" class="w-6 h-6"></i>
+            </div>
+          </div>
+          <div class="premium-card p-6 flex items-center justify-between">
+            <div>
+              <span class="text-xs font-semibold uppercase text-slate-400"
+                >Avg Cost / Liter</span
+              >
+              <p id="stat-avg" class="text-3xl font-bold text-emerald-600 mt-1">
+                --
+              </p>
+            </div>
+            <div
+              class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600"
+            >
+              <i data-lucide="calculator" class="w-6 h-6"></i>
             </div>
           </div>
         </section>
@@ -205,25 +205,17 @@
                 <input
                   id="search-input"
                   type="text"
-                  placeholder="Search service type..."
+                  placeholder="Search vehicle registration..."
                   class="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-sky-500"
                 />
               </div>
-              <select
-                id="status-filter"
-                class="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-600 focus:outline-none focus:border-sky-500"
-              >
-                <option value="ALL">All Statuses</option>
-                <option value="Active">Active</option>
-                <option value="Closed">Closed</option>
-              </select>
             </div>
 
             <button
               id="add-btn"
               class="bg-gradient-to-r from-sky-600 to-emerald-500 text-white font-semibold text-sm px-5 py-2.5 rounded-full hover:opacity-90 flex items-center justify-center gap-2 shadow-sm transition-all flex-shrink-0"
             >
-              <i data-lucide="plus" class="w-4 h-4"></i> Log Maintenance
+              <i data-lucide="plus" class="w-4 h-4"></i> Add Fuel Entry
             </button>
           </div>
 
@@ -235,17 +227,17 @@
                 <tr>
                   <th class="py-4 px-6 rounded-tl-lg">Log ID</th>
                   <th class="py-4 px-6">Vehicle</th>
-                  <th class="py-4 px-6">Service Type</th>
                   <th class="py-4 px-6">Date</th>
-                  <th class="py-4 px-6">Cost</th>
-                  <th class="py-4 px-6">Status</th>
+                  <th class="py-4 px-6 text-right">Volume Filled (L)</th>
+                  <th class="py-4 px-6 text-right">Total Cost (₹)</th>
+                  <th class="py-4 px-6 text-right">Cost per Liter (₹/L)</th>
                   <th class="py-4 px-6 text-center rounded-tr-lg">Actions</th>
                 </tr>
               </thead>
               <tbody id="table-body" class="divide-y divide-slate-100">
                 <tr>
                   <td colspan="7" class="p-8 text-center text-slate-400">
-                    Loading maintenance logs...
+                    Loading fuel logs...
                   </td>
                 </tr>
               </tbody>
@@ -261,15 +253,15 @@
     >
       <div class="fixed inset-0 modal-backdrop" id="modal-backdrop-bg"></div>
       <div
-        class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-6 relative z-10 transform transition-all shadow-2xl"
+        class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 relative z-10 transform transition-all shadow-2xl"
       >
         <div class="flex items-center justify-between mb-6">
           <div>
             <h3 id="modal-title" class="text-xl font-bold text-slate-900">
-              Log Maintenance
+              Record Fuel
             </h3>
             <p class="text-xs text-slate-400 mt-1">
-              Record service details and costs.
+              Log fuel volumes and expenses.
             </p>
           </div>
           <button
@@ -301,13 +293,12 @@
           <div>
             <label
               class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1"
-              >Service / Repair Type</label
+              >Date of Fill-up</label
             >
             <input
-              type="text"
-              id="f-type"
+              type="date"
+              id="f-date"
               required
-              placeholder="Engine Oil Change, Brake Replacement..."
               class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-sky-500"
             />
           </div>
@@ -316,12 +307,15 @@
             <div>
               <label
                 class="block text-xs font-semibold uppercase text-slate-400 mb-1.5 pl-1"
-                >Date of Service</label
+                >Liters Filled (L)</label
               >
               <input
-                type="date"
-                id="f-date"
+                type="number"
+                id="f-liters"
                 required
+                min="0.1"
+                step="0.01"
+                placeholder="45.50"
                 class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-sky-500"
               />
             </div>
@@ -334,16 +328,25 @@
                 type="number"
                 id="f-cost"
                 required
-                min="0"
+                min="0.01"
                 step="0.01"
-                placeholder="₹350.00"
+                placeholder="120.00"
                 class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-sky-500"
               />
             </div>
           </div>
 
+          <!-- Real-time Cost/L indicator -->
+          <div class="px-2 pt-2 text-right">
+            <span class="text-xs text-slate-500 font-medium"
+              >Effective Cost:
+              <span id="f-effective" class="text-sky-600 font-bold">₹0.00</span>
+              / L</span
+            >
+          </div>
+
           <div
-            class="pt-6 mt-2 border-t border-slate-100 flex items-center justify-end gap-3"
+            class="pt-4 mt-2 border-t border-slate-100 flex items-center justify-end gap-3"
           >
             <button
               type="button"
@@ -356,31 +359,29 @@
               type="submit"
               class="px-6 py-2 text-sm font-semibold bg-gradient-to-r from-sky-600 to-emerald-500 text-white rounded-full hover:opacity-90 shadow-sm transition-opacity"
             >
-              Save Log
+              Save Entry
             </button>
           </div>
         </form>
       </div>
     </div>
     <script src="/frontend/staticFiles/script.js"></script>
-    <script src="/frontend/staticFiles/maintain.js"></script>
+    <script src="/frontend/staticFiles/fuel.js"></script>
 
     <script>
-      (async function () {
+      (async () => {
         await loading();
 
         document.getElementById("current-date").textContent =
           new Date().toLocaleDateString("en-GB", {
             day: "numeric",
-
             month: "short",
-
             year: "numeric",
           });
 
         await loadVehicles();
 
-        await loadMaintenance();
+        await loadFuelLogs();
       })();
     </script>
   </body>
