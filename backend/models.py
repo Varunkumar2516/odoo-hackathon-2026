@@ -94,6 +94,7 @@ class Vehicle(Base):
     )
     
     # Relationships
+    expenses = relationship("Expense", back_populates="vehicle")
     trips = relationship("Trip", back_populates="vehicle")
     maintenance_logs = relationship("MaintenanceLog", back_populates="vehicle")
     fuel_logs = relationship("FuelLog", back_populates="vehicle")
@@ -119,6 +120,7 @@ class Trip(Base):
     )
 
     # Relationships
+    expenses = relationship("Expense",back_populates="trip")
     vehicle = relationship("Vehicle", back_populates="trips")
     driver = relationship("Driver", back_populates="trips")
 
@@ -166,8 +168,14 @@ class Expense(Base):
     expense_type = Column(String(50), nullable=False)
     amount = Column(Float, nullable=False)
     date = Column(Date, nullable=False)
-
+    fuel_log_id = Column(Integer,ForeignKey("fuel_logs.fuel_log_id"),nullable=True)
+    
+    trip = relationship("Trip",back_populates="expenses")
+    vehicle = relationship("Vehicle", back_populates="expenses")
     # FIX: Converted check constraints into database literal strings
     __table_args__ = (
-        CheckConstraint("expense_type IN ('Toll', 'Maintenance Linked', 'Other')", name='check_valid_expense_type'), 
+        CheckConstraint(
+    "expense_type IN ('Fuel','Maintenance','Toll','Parking','Driver Allowance','Miscellaneous')",
+    name="check_valid_expense_type"
+), 
     )

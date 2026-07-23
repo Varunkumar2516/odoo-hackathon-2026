@@ -1,7 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from backend.database import get_db
-from backend.models import FuelLog, Vehicle,UserModel,Trip,MaintenanceLog
+from backend.models import (
+    FuelLog,
+    Vehicle,
+    UserModel,
+    Trip,
+    MaintenanceLog,
+    Expense
+)
 from backend import oauth2
 from backend.schemamodels import (
     FuelCreate,
@@ -142,18 +149,35 @@ def create_fuel_log(
         if maintenance.trip_id:
             fuel.trip_id = maintenance.trip_id
 
-    # -------------------------------
+    
     # Save Fuel Log
-    # -------------------------------
+    
     new_log = FuelLog(
         **fuel.model_dump()
     )
 
     db.add(new_log)
 
-    db.commit()
+    db.flush()
 
     db.refresh(new_log)
+
+
+# Automatically Create Expense
+
+
+    expense = Expense(
+    fuel_log_id=new_log.fuel_log_id,
+    vehicle_id=new_log.vehicle_id,
+    trip_id=new_log.trip_id,
+    expense_type="Fuel",
+    amount=new_log.fuel_cost,
+    date=new_log.date
+)
+
+    db.add(expense)
+
+    db.commit()
 
     return {
         "message": "Fuel log created successfully."
@@ -281,13 +305,37 @@ def update_fuel_log(
     for key, value in fuel.model_dump().items():
         setattr(log, key, value)
 
-    db.commit()
+    db.flush()
 
     db.refresh(log)
+
+# Update Fuel Expense
+
+
+    expense = db.query(Expense).filter(
+        Expense.fuel_log_id == log.fuel_log_id,
+        Expense.vehicle_id == log.vehicle_id,
+        Expense.trip_id == log.trip_id,
+        Expense.expense_type == "Fuel",
+        Expense.date == log.date
+    ).first()
+
+    if expense:
+        
+        expense.vehicle_id = log.vehicle_id
+        expense.trip_id = log.trip_id
+        expense.amount = log.fuel_cost
+        expense.date = log.date
+
+    db.commit()
 
     return {
         "message": "Fuel log updated successfully."
     }
+
+
+
+
 @router.delete( "/{fuel_log_id}")
 def delete_fuel_log(
     fuel_log_id: int,
@@ -308,7 +356,16 @@ def delete_fuel_log(
             status_code=404,
             detail="Fuel log not found."
         )
+    expense = db.query(Expense).filter(
+    Expense.fuel_log_id == log.fuel_log_id,
+    Expense.vehicle_id == log.vehicle_id,
+    Expense.trip_id == log.trip_id,
+    Expense.expense_type == "Fuel",
+    Expense.date == log.date
+).first()
 
+    if expense:
+        db.delete(expense)
     db.delete(log)
 
     db.commit()

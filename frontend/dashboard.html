@@ -1,365 +1,550 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <script>window["__codeletBootstrap__"]=JSON.parse('{"A":"A","B":"20260710-05-9ed98a3"}');</script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TransitOps — Dashboard</title>
-  
-  <!-- Tailwind CSS & Lucide Icons -->
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  
-  <!-- Premium Google Fonts: Outfit for brand, Inter for high-density reading -->
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <style>
-    body { 
-      font-family: 'Inter', sans-serif; 
-      background-color: #F8FAFC;
-    }
+  <head>
+    <script>
+      window["__codeletBootstrap__"] = JSON.parse(
+        '{"A":"A","B":"20260710-05-9ed98a3"}',
+      );
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TransitOps — Dashboard</title>
+
+    <!-- Tailwind CSS & Lucide Icons -->
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+
+    <!-- Premium Google Fonts: Outfit for brand, Inter for high-density reading -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/frontend/components/css/sidebar.css" />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8fafc;
+      }
+
+      h1,
+      h2,
+      h3,
+      .font-display {
+        font-family: "Outfit", sans-serif;
+      }
+
+      /* Premium Custom Donut Chart Ring */
+      .donut {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: conic-gradient(
+          #10b981 0% 62%,
+          /* Active */ #f59e0b 62% 78%,
+          /* Idle */ #ef4444 78% 88%,
+          /* Maintenance */ #94a3b8 88% 100% /* Off-duty */
+        );
+        position: relative;
+        box-shadow:
+          inset 0 2px 4px rgba(0, 0, 0, 0.06),
+          0 10px 20px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+      }
+      .donut:hover {
+        transform: scale(1.02);
+      }
+      .donut::after {
+        content: "62%";
+        position: absolute;
+        inset: 32px;
+        border-radius: 50%;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Outfit", sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: #0f172a;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Elegant card effects */
+      .premium-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        box-shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.02),
+          0 2px 4px -1px rgba(0, 0, 0, 0.01);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .premium-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.08);
+        border-color: #cbd5e1;
+      }
+
+      /* Scrollbar cleanup */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+      }
+    </style>
     
-    h1, h2, h3, .font-display {
-      font-family: 'Outfit', sans-serif;
-    }
-
-    /* Premium Custom Donut Chart Ring */
-    .donut { 
-      width: 160px; 
-      height: 160px; 
-      border-radius: 50%; 
-      background: conic-gradient(
-        #10B981 0% 62%,    /* Active */
-        #F59E0B 62% 78%,   /* Idle */
-        #EF4444 78% 88%,   /* Maintenance */
-        #94A3B8 88% 100%   /* Off-duty */
-      ); 
-      position: relative; 
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 10px 20px rgba(0,0,0,0.05);
-      transition: transform 0.3s ease;
-    }
-    .donut:hover {
-      transform: scale(1.02);
-    }
-    .donut::after { 
-      content: '62%'; 
-      position: absolute; 
-      inset: 32px; 
-      border-radius: 50%; 
-      background: #ffffff; 
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 700;
-      font-size: 1.5rem;
-      color: #0F172A;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-
-    /* Sidebar glass and active styling */
-    .nav-item { 
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-    }
-    .nav-item:hover { 
-      background: #F1F5F9; 
-      color: #0F172A; 
-      padding-left: 1rem;
-    }
-    .nav-item.active { 
-      background: linear-gradient(90deg, #E0F2FE 0%, #F0F9FF 100%); 
-      color: #0288D1; 
-      font-weight: 600; 
-      border-left: 4px solid #0288D1;
-      padding-left: 1rem;
-    }
-
-    /* Elegant card effects */
-    .premium-card {
-      background: #ffffff;
-      border: 1px solid #E2E8F0;
-      border-radius: 16px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .premium-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.08);
-      border-color: #CBD5E1;
-    }
-    
-    /* Scrollbar cleanup */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #F1F5F9;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #CBD5E1;
-      border-radius: 3px;
-    }
-  </style>
   </head>
-<body data-template-id="__page-root" class="min-h-screen flex w-full text-slate-700">
+  <body
+    data-template-id="__page-root"
+    class="min-h-screen flex w-full text-slate-700"
+  >
+    <!-- Sidebar Component -->
+    <aside
+      data-template-id="sidebar"
+      class="canva-sidebar w-64 min-h-screen flex-shrink-0 border-r border-slate-200 bg-white flex flex-col justify-between"
+    >
+      <div id="sidebar"></div>
+    </aside>
 
-  <!-- Sidebar Component -->
-  <aside data-template-id="sidebar" class="canva-sidebar w-64 min-h-screen flex-shrink-0 border-r border-slate-200 bg-white flex flex-col justify-between">
-    <div id="sidebar"></div>
-  </aside>
-
-  <!-- Main Viewport Container -->
-  <div class="flex-1 flex flex-col min-w-0">
-    
-    <!-- Topbar Component -->
-    <header data-template-id="topbar" class="canva-header border-b border-slate-200 bg-white px-8 py-5 flex items-center justify-between">
-      <div class="flex flex-col">
-        <h2 id= "page-heading" data-template-id="page-heading" class="canva-text font-bold text-2xl text-slate-900">Operations Control Center : Welcome</h2>
-        <p class="text-xs text-slate-400 mt-0.5">Real-time status overview of smart transport system</p>
-      </div>
-      <div class="flex items-center gap-4">
-        <!-- Interactive Date Badge -->
-        <span class="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-full font-medium">
-          <i data-lucide="calendar" class="w-4 h-4 text-slate-500"></i>
-          12 Jul 2026
-        </span>
-        <!-- User Badge -->
-        <div class="flex items-center gap-2 pl-3 border-l border-slate-200">
-          <div id="user-badge" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm border border-slate-200">OP</div>
+    <!-- Main Viewport Container -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <!-- Topbar Component -->
+      <header
+        data-template-id="topbar"
+        class="canva-header border-b border-slate-200 bg-white px-8 py-5 flex items-center justify-between"
+      >
+        <div class="flex flex-col">
+          <h2
+            id="page-heading"
+            data-template-id="page-heading"
+            class="canva-text font-bold text-2xl text-slate-900"
+          >
+            Operations Control Center : Welcome
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Real-time status overview of smart transport system
+          </p>
         </div>
-      </div>
-    </header>
-
-    <!-- Scrollable main workspace -->
-    <main class="flex-1 p-8 space-y-8 overflow-y-auto">
-      
-      <!-- KPI Stats Section -->
-      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        
-        <!-- Metric Item 1 -->
-        <div data-template-id="kpi-vehicles" class="canva-card premium-card p-6">
-          <div class="flex items-center justify-between mb-4">
-            <span data-template-id="kpi-vehicles-label" class="canva-text text-xs font-semibold uppercase tracking-wider text-slate-400">Total Fleet Size</span>
-            <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-              <i data-lucide="truck" class="w-5 h-5"></i>
-            </div>
-          </div>
-          <p class="text-4xl font-bold text-slate-900 tracking-tight">42</p>
-          <span class="text-xs text-emerald-600 font-medium flex items-center gap-1 mt-2">
-            <i data-lucide="trending-up" class="w-3 h-3"></i> +2 added this month
+        <div class="flex items-center gap-4">
+          <!-- Interactive Date Badge -->
+          <span
+            class="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-full font-medium"
+          >
+            <i data-lucide="calendar" class="w-4 h-4 text-slate-500"></i>
+            12 Jul 2026
           </span>
-        </div>
-
-        <!-- Metric Item 2 -->
-        <div data-template-id="kpi-ontime" class="canva-card premium-card p-6">
-          <div class="flex items-center justify-between mb-4">
-            <span data-template-id="kpi-ontime-label" class="canva-text text-xs font-semibold uppercase tracking-wider text-slate-400">On-Time Performance</span>
-            <div class="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center text-sky-600">
-              <i data-lucide="clock" class="w-5 h-5"></i>
+          <!-- User Badge -->
+          <div class="flex items-center gap-2 pl-3 border-l border-slate-200">
+            <div
+              id="user-badge"
+              class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm border border-slate-200"
+            >
+              OP
             </div>
           </div>
-          <p class="text-4xl font-bold text-slate-900 tracking-tight">94.2%</p>
-          <span class="text-xs text-sky-600 font-medium flex items-center gap-1 mt-2">
-            <i data-lucide="arrow-up" class="w-3 h-3"></i> Above target threshold (90%)
-          </span>
         </div>
+      </header>
 
-        <!-- Metric Item 3 -->
-        <div data-template-id="kpi-trips" class="canva-card premium-card p-6">
-          <div class="flex items-center justify-between mb-4">
-            <span data-template-id="kpi-trips-label" class="canva-text text-xs font-semibold uppercase tracking-wider text-slate-400">Trips Dispatched</span>
-            <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
-              <i data-lucide="map-pin" class="w-5 h-5"></i>
+      <!-- Scrollable main workspace -->
+      <main class="flex-1 p-8 space-y-8 overflow-y-auto">
+        <!-- KPI Stats Section -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Metric Item 1 -->
+          <div
+            data-template-id="kpi-vehicles"
+            class="canva-card premium-card p-6"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <span
+                data-template-id="kpi-vehicles-label"
+                class="canva-text text-xs font-semibold uppercase tracking-wider text-slate-400"
+                >Total Fleet Size</span
+              >
+              <div
+                class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600"
+              >
+                <i data-lucide="truck" class="w-5 h-5"></i>
+              </div>
             </div>
-          </div>
-          <p class="text-4xl font-bold text-slate-900 tracking-tight">128</p>
-          <span class="text-xs text-amber-600 font-medium flex items-center gap-1 mt-2">
-            12 trips currently active
-          </span>
-        </div>
-
-        <!-- Metric Item 4 -->
-        <div data-template-id="kpi-fuel" class="canva-card premium-card p-6">
-          <div class="flex items-center justify-between mb-4">
-            <span data-template-id="kpi-fuel-label" class="canva-text text-xs font-semibold uppercase tracking-wider text-slate-400">Fleet Efficiency</span>
-            <div class="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
-              <i data-lucide="fuel" class="w-5 h-5"></i>
-            </div>
-          </div>
-          <p class="text-4xl font-bold text-slate-900 tracking-tight">7.3 <span class="text-lg font-medium text-slate-400">km/l</span></p>
-          <span class="text-xs text-rose-500 font-medium flex items-center gap-1 mt-2">
-            Optimal diesel standard
-          </span>
-        </div>
-      </section>
-
-      <!-- Main Operational Modules Section -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <!-- Live Trips Dispatch Schedule Table -->
-        <section data-template-id="trips-section" class="canva-card lg:col-span-2 premium-card p-6">
-          <div class="flex items-center justify-between mb-6">
-            <div class="flex flex-col">
-              <h3 data-template-id="trips-heading" class="canva-text text-lg font-bold text-slate-900">Live Active Route Dispatch</h3>
-              <p class="text-xs text-slate-400 mt-0.5">Realtime monitoring coordinates and expected arrival details</p>
-            </div>
-            <button class="text-xs bg-slate-50 border border-slate-200 font-semibold text-slate-700 px-3.5 py-1.5 rounded-lg hover:bg-slate-100 flex items-center gap-1.5">
-              <i data-lucide="filter" class="w-3.5 h-3.5"></i> Filter Routes
-            </button>
+            <p class="text-4xl font-bold text-slate-900 tracking-tight">42</p>
+            <span
+              class="text-xs text-emerald-600 font-medium flex items-center gap-1 mt-2"
+            >
+              <i data-lucide="trending-up" class="w-3 h-3"></i> +2 added this
+              month
+            </span>
           </div>
 
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm text-left text-slate-600">
-              <thead class="text-xs uppercase text-slate-400 tracking-wider bg-slate-50 rounded-lg">
-                <tr>
-                  <th class="py-3 px-4">Route Info</th>
-                  <th class="px-4">Vehicle Reference</th>
-                  <th class="px-4 text-center">Status Badge</th>
-                  <th class="px-4 text-right">Scheduled ETA</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100">
-                <tr class="hover:bg-slate-50/70 transition-colors">
-                  <td class="py-4 px-4 font-semibold text-slate-900 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    Chandigarh <i data-lucide="arrow-right" class="w-3 h-3 text-slate-400 inline mx-0.5"></i> Delhi
-                  </td>
-                  <td class="px-4 font-mono text-slate-500 text-xs font-semibold">PB-10-AX-4421</td>
-                  <td class="px-4 text-center">
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200">
-                      On Time
-                    </span>
-                  </td>
-                  <td class="px-4 text-right font-medium text-slate-900">06:45 AM</td>
-                </tr>
-                <tr class="hover:bg-slate-50/70 transition-colors">
-                  <td class="py-4 px-4 font-semibold text-slate-900 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                    Ludhiana <i data-lucide="arrow-right" class="w-3 h-3 text-slate-400 inline mx-0.5"></i> Amritsar
-                  </td>
-                  <td class="px-4 font-mono text-slate-500 text-xs font-semibold">PB-11-BZ-7789</td>
-                  <td class="px-4 text-center">
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-medium border border-amber-200">
-                      Delayed
-                    </span>
-                  </td>
-                  <td class="px-4 text-right font-medium text-slate-900">07:20 AM</td>
-                </tr>
-                <tr class="hover:bg-slate-50/70 transition-colors">
-                  <td class="py-4 px-4 font-semibold text-slate-900 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    Jalandhar <i data-lucide="arrow-right" class="w-3 h-3 text-slate-400 inline mx-0.5"></i> Pathankot
-                  </td>
-                  <td class="px-4 font-mono text-slate-500 text-xs font-semibold">PB-08-CK-3310</td>
-                  <td class="px-4 text-center">
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200">
-                      On Time
-                    </span>
-                  </td>
-                  <td class="px-4 text-right font-medium text-slate-900">08:00 AM</td>
-                </tr>
-                <tr class="hover:bg-slate-50/70 transition-colors">
-                  <td class="py-4 px-4 font-semibold text-slate-900 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-                    Patiala <i data-lucide="arrow-right" class="w-3 h-3 text-slate-400 inline mx-0.5"></i> Bathinda
-                  </td>
-                  <td class="px-4 font-mono text-slate-500 text-xs font-semibold">PB-12-DW-5567</td>
-                  <td class="px-4 text-center">
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 text-xs font-medium border border-rose-200">
-                      Breakdown
-                    </span>
-                  </td>
-                  <td class="px-4 text-right font-medium text-slate-400">—</td>
-                </tr>
-              </tbody>
-            </table>
+          <!-- Metric Item 2 -->
+          <div
+            data-template-id="kpi-ontime"
+            class="canva-card premium-card p-6"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <span
+                data-template-id="kpi-ontime-label"
+                class="canva-text text-xs font-semibold uppercase tracking-wider text-slate-400"
+                >On-Time Performance</span
+              >
+              <div
+                class="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center text-sky-600"
+              >
+                <i data-lucide="clock" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <p class="text-4xl font-bold text-slate-900 tracking-tight">
+              94.2%
+            </p>
+            <span
+              class="text-xs text-sky-600 font-medium flex items-center gap-1 mt-2"
+            >
+              <i data-lucide="arrow-up" class="w-3 h-3"></i> Above target
+              threshold (90%)
+            </span>
+          </div>
+
+          <!-- Metric Item 3 -->
+          <div data-template-id="kpi-trips" class="canva-card premium-card p-6">
+            <div class="flex items-center justify-between mb-4">
+              <span
+                data-template-id="kpi-trips-label"
+                class="canva-text text-xs font-semibold uppercase tracking-wider text-slate-400"
+                >Trips Dispatched</span
+              >
+              <div
+                class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600"
+              >
+                <i data-lucide="map-pin" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <p class="text-4xl font-bold text-slate-900 tracking-tight">128</p>
+            <span
+              class="text-xs text-amber-600 font-medium flex items-center gap-1 mt-2"
+            >
+              12 trips currently active
+            </span>
+          </div>
+
+          <!-- Metric Item 4 -->
+          <div data-template-id="kpi-fuel" class="canva-card premium-card p-6">
+            <div class="flex items-center justify-between mb-4">
+              <span
+                data-template-id="kpi-fuel-label"
+                class="canva-text text-xs font-semibold uppercase tracking-wider text-slate-400"
+                >Fleet Efficiency</span
+              >
+              <div
+                class="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600"
+              >
+                <i data-lucide="fuel" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <p class="text-4xl font-bold text-slate-900 tracking-tight">
+              7.3 <span class="text-lg font-medium text-slate-400">km/l</span>
+            </p>
+            <span
+              class="text-xs text-rose-500 font-medium flex items-center gap-1 mt-2"
+            >
+              Optimal diesel standard
+            </span>
           </div>
         </section>
 
-        <!-- Dynamic Pie/Donut Segment Breakdown -->
-        <section data-template-id="status-section" class="canva-card premium-card p-6 flex flex-col justify-between">
-          <div>
-            <h3 data-template-id="status-heading" class="canva-text text-lg font-bold text-slate-900">Fleet Utilization</h3>
-            <p class="text-xs text-slate-400 mt-0.5">Active deployment breakdown index</p>
+        <!-- Main Operational Modules Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Live Trips Dispatch Schedule Table -->
+          <section
+            data-template-id="trips-section"
+            class="canva-card lg:col-span-2 premium-card p-6"
+          >
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex flex-col">
+                <h3
+                  data-template-id="trips-heading"
+                  class="canva-text text-lg font-bold text-slate-900"
+                >
+                  Live Active Route Dispatch
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">
+                  Realtime monitoring coordinates and expected arrival details
+                </p>
+              </div>
+              <button
+                class="text-xs bg-slate-50 border border-slate-200 font-semibold text-slate-700 px-3.5 py-1.5 rounded-lg hover:bg-slate-100 flex items-center gap-1.5"
+              >
+                <i data-lucide="filter" class="w-3.5 h-3.5"></i> Filter Routes
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left text-slate-600">
+                <thead
+                  class="text-xs uppercase text-slate-400 tracking-wider bg-slate-50 rounded-lg"
+                >
+                  <tr>
+                    <th class="py-3 px-4">Route Info</th>
+                    <th class="px-4">Vehicle Reference</th>
+                    <th class="px-4 text-center">Status Badge</th>
+                    <th class="px-4 text-right">Scheduled ETA</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  <tr class="hover:bg-slate-50/70 transition-colors">
+                    <td
+                      class="py-4 px-4 font-semibold text-slate-900 flex items-center gap-2"
+                    >
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                      Chandigarh
+                      <i
+                        data-lucide="arrow-right"
+                        class="w-3 h-3 text-slate-400 inline mx-0.5"
+                      ></i>
+                      Delhi
+                    </td>
+                    <td
+                      class="px-4 font-mono text-slate-500 text-xs font-semibold"
+                    >
+                      PB-10-AX-4421
+                    </td>
+                    <td class="px-4 text-center">
+                      <span
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200"
+                      >
+                        On Time
+                      </span>
+                    </td>
+                    <td class="px-4 text-right font-medium text-slate-900">
+                      06:45 AM
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/70 transition-colors">
+                    <td
+                      class="py-4 px-4 font-semibold text-slate-900 flex items-center gap-2"
+                    >
+                      <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                      Ludhiana
+                      <i
+                        data-lucide="arrow-right"
+                        class="w-3 h-3 text-slate-400 inline mx-0.5"
+                      ></i>
+                      Amritsar
+                    </td>
+                    <td
+                      class="px-4 font-mono text-slate-500 text-xs font-semibold"
+                    >
+                      PB-11-BZ-7789
+                    </td>
+                    <td class="px-4 text-center">
+                      <span
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-medium border border-amber-200"
+                      >
+                        Delayed
+                      </span>
+                    </td>
+                    <td class="px-4 text-right font-medium text-slate-900">
+                      07:20 AM
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/70 transition-colors">
+                    <td
+                      class="py-4 px-4 font-semibold text-slate-900 flex items-center gap-2"
+                    >
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                      Jalandhar
+                      <i
+                        data-lucide="arrow-right"
+                        class="w-3 h-3 text-slate-400 inline mx-0.5"
+                      ></i>
+                      Pathankot
+                    </td>
+                    <td
+                      class="px-4 font-mono text-slate-500 text-xs font-semibold"
+                    >
+                      PB-08-CK-3310
+                    </td>
+                    <td class="px-4 text-center">
+                      <span
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200"
+                      >
+                        On Time
+                      </span>
+                    </td>
+                    <td class="px-4 text-right font-medium text-slate-900">
+                      08:00 AM
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/70 transition-colors">
+                    <td
+                      class="py-4 px-4 font-semibold text-slate-900 flex items-center gap-2"
+                    >
+                      <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                      Patiala
+                      <i
+                        data-lucide="arrow-right"
+                        class="w-3 h-3 text-slate-400 inline mx-0.5"
+                      ></i>
+                      Bathinda
+                    </td>
+                    <td
+                      class="px-4 font-mono text-slate-500 text-xs font-semibold"
+                    >
+                      PB-12-DW-5567
+                    </td>
+                    <td class="px-4 text-center">
+                      <span
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 text-xs font-medium border border-rose-200"
+                      >
+                        Breakdown
+                      </span>
+                    </td>
+                    <td class="px-4 text-right font-medium text-slate-400">
+                      —
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Dynamic Pie/Donut Segment Breakdown -->
+          <section
+            data-template-id="status-section"
+            class="canva-card premium-card p-6 flex flex-col justify-between"
+          >
+            <div>
+              <h3
+                data-template-id="status-heading"
+                class="canva-text text-lg font-bold text-slate-900"
+              >
+                Fleet Utilization
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">
+                Active deployment breakdown index
+              </p>
+            </div>
+
+            <div class="flex flex-col items-center justify-center gap-6 my-4">
+              <div class="donut"></div>
+
+              <ul class="text-sm space-y-2 w-full max-w-[200px]">
+                <li class="flex items-center justify-between text-slate-600">
+                  <span class="flex items-center gap-2"
+                    ><span class="w-3 h-3 rounded-full bg-emerald-500"></span
+                    >Active</span
+                  >
+                  <span class="font-semibold text-slate-950">62%</span>
+                </li>
+                <li class="flex items-center justify-between text-slate-600">
+                  <span class="flex items-center gap-2"
+                    ><span class="w-3 h-3 rounded-full bg-amber-500"></span
+                    >Idle</span
+                  >
+                  <span class="font-semibold text-slate-950">16%</span>
+                </li>
+                <li class="flex items-center justify-between text-slate-600">
+                  <span class="flex items-center gap-2"
+                    ><span class="w-3 h-3 rounded-full bg-rose-500"></span
+                    >Maintenance</span
+                  >
+                  <span class="font-semibold text-slate-950">10%</span>
+                </li>
+                <li class="flex items-center justify-between text-slate-600">
+                  <span class="flex items-center gap-2"
+                    ><span class="w-3 h-3 rounded-full bg-slate-400"></span
+                    >Off-duty</span
+                  >
+                  <span class="font-semibold text-slate-950">12%</span>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </div>
+
+        <!-- Warnings, Alerts, Logs module -->
+        <section
+          data-template-id="alerts-section"
+          class="canva-card premium-card p-6"
+        >
+          <div class="flex items-center gap-2 mb-5">
+            <div
+              class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"
+            ></div>
+            <h3
+              data-template-id="alerts-heading"
+              class="canva-text text-lg font-bold text-slate-900"
+            >
+              Telemetry & Diagnostic Warnings
+            </h3>
           </div>
-          
-          <div class="flex flex-col items-center justify-center gap-6 my-4">
-            <div class="donut"></div>
-            
-            <ul class="text-sm space-y-2 w-full max-w-[200px]">
-              <li class="flex items-center justify-between text-slate-600">
-                <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-emerald-500"></span>Active</span>
-                <span class="font-semibold text-slate-950">62%</span>
-              </li>
-              <li class="flex items-center justify-between text-slate-600">
-                <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-500"></span>Idle</span>
-                <span class="font-semibold text-slate-950">16%</span>
-              </li>
-              <li class="flex items-center justify-between text-slate-600">
-                <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-rose-500"></span>Maintenance</span>
-                <span class="font-semibold text-slate-950">10%</span>
-              </li>
-              <li class="flex items-center justify-between text-slate-600">
-                <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-slate-400"></span>Off-duty</span>
-                <span class="font-semibold text-slate-950">12%</span>
-              </li>
-            </ul>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Critical warning banner -->
+            <div
+              class="flex items-start gap-3.5 p-4 rounded-xl bg-amber-50/50 border border-amber-100"
+            >
+              <div
+                class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 flex-shrink-0"
+              >
+                <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <p class="text-slate-900 text-sm font-semibold">
+                  PB-12-DW-5567 — Engine overheat warning
+                </p>
+                <p class="text-slate-500 text-xs mt-0.5">
+                  Critical coolant thresholds exceeded. Diagnostics recommended.
+                </p>
+                <span
+                  class="inline-block mt-2 text-[10px] bg-amber-100/70 text-amber-800 font-bold tracking-wider px-2 py-0.5 rounded uppercase"
+                  >Reported 35 mins ago</span
+                >
+              </div>
+            </div>
+
+            <!-- Scheduled event notice banner -->
+            <div
+              class="flex items-start gap-3.5 p-4 rounded-xl bg-sky-50/50 border border-sky-100"
+            >
+              <div
+                class="w-10 h-10 rounded-lg bg-sky-100 flex items-center justify-center text-sky-600 flex-shrink-0"
+              >
+                <i data-lucide="wrench" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <p class="text-slate-900 text-sm font-semibold">
+                  PB-10-AX-4421 — Scheduled oil change alert
+                </p>
+                <p class="text-slate-500 text-xs mt-0.5">
+                  Preventative routine due at milestone 48,000 km target.
+                </p>
+                <span
+                  class="inline-block mt-2 text-[10px] bg-sky-100/70 text-sky-800 font-bold tracking-wider px-2 py-0.5 rounded uppercase"
+                  >Scheduled for tomorrow</span
+                >
+              </div>
+            </div>
           </div>
         </section>
-      </div>
+      </main>
+    </div>
 
-      <!-- Warnings, Alerts, Logs module -->
-      <section data-template-id="alerts-section" class="canva-card premium-card p-6">
-        <div class="flex items-center gap-2 mb-5">
-          <div class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></div>
-          <h3 data-template-id="alerts-heading" class="canva-text text-lg font-bold text-slate-900">Telemetry & Diagnostic Warnings</h3>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Critical warning banner -->
-          <div class="flex items-start gap-3.5 p-4 rounded-xl bg-amber-50/50 border border-amber-100">
-            <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600 flex-shrink-0">
-              <i data-lucide="alert-triangle" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <p class="text-slate-900 text-sm font-semibold">PB-12-DW-5567 — Engine overheat warning</p>
-              <p class="text-slate-500 text-xs mt-0.5">Critical coolant thresholds exceeded. Diagnostics recommended.</p>
-              <span class="inline-block mt-2 text-[10px] bg-amber-100/70 text-amber-800 font-bold tracking-wider px-2 py-0.5 rounded uppercase">Reported 35 mins ago</span>
-            </div>
-          </div>
-          
-          <!-- Scheduled event notice banner -->
-          <div class="flex items-start gap-3.5 p-4 rounded-xl bg-sky-50/50 border border-sky-100">
-            <div class="w-10 h-10 rounded-lg bg-sky-100 flex items-center justify-center text-sky-600 flex-shrink-0">
-              <i data-lucide="wrench" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <p class="text-slate-900 text-sm font-semibold">PB-10-AX-4421 — Scheduled oil change alert</p>
-              <p class="text-slate-500 text-xs mt-0.5">Preventative routine due at milestone 48,000 km target.</p>
-              <span class="inline-block mt-2 text-[10px] bg-sky-100/70 text-sky-800 font-bold tracking-wider px-2 py-0.5 rounded uppercase">Scheduled for tomorrow</span>
-            </div>
-          </div>
-        </div>
-      </section>
+    <script src="frontend/staticFiles/script.js"></script>
 
-    </main>
-  </div>
+    <script>
+      window.addEventListener("DOMContentLoaded", async () => {
+        const user = await loading();
+        if (!user) return;
 
-  
-  <script src="frontend/staticFiles/script.js"></script>
+        const heading = document.getElementById("page-heading");
 
-  <script>
-
-window.addEventListener("DOMContentLoaded", async () => {
-    const user = await loading();
-    if(!user) return;
-
-    const heading = document.getElementById("page-heading");
-
-    heading.textContent =
-    `Operations Control Center : Welcome ${user.name}`;
-  
-});
-  </script>
-</body>
+        heading.textContent = `Operations Control Center : Welcome ${user.name}`;
+      });
+    </script>
+  </body>
+</html>

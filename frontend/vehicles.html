@@ -1,355 +1,412 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TransitOps — Fleet Registry</title>
-  
-  <!-- Tailwind CSS & Lucide Icons -->
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  
-  <!-- Premium Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <style>
-    body { 
-      font-family: 'Inter', sans-serif; 
-      background-color: #F8FAFC;
-    }
-    h1, h2, h3, .font-display {
-      font-family: 'Outfit', sans-serif;
-    }
-    
-    /* Sidebar active navigation styling */
-    .nav-item { 
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-    }
-    .nav-item:hover { 
-      background: #F1F5F9; 
-      color: #0F172A; 
-      padding-left: 1rem;
-    }
-    .nav-item.active { 
-      background: linear-gradient(90deg, #E0F2FE 0%, #F0F9FF 100%); 
-      color: #0288D1; 
-      font-weight: 600; 
-      border-left: 4px solid #0288D1;
-      padding-left: 1rem;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TransitOps — Fleet Registry</title>
 
-    /* Premium card & modal structures */
-    .premium-card {
-      background: #ffffff;
-      border: 1px solid #E2E8F0;
-      border-radius: 16px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
-    }
-    .modal-backdrop {
-      background-color: rgba(15, 23, 42, 0.3);
-      backdrop-filter: blur(4px);
-    }
+    <!-- Tailwind CSS & Lucide Icons -->
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
 
-    /* Floating feedback notifications */
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      padding: 0.75rem 1.5rem;
-      background: #333;
-      color: #fff;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      z-index: 2000;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      animation: slideIn 0.2s ease-out;
-    }
-    .toast.error { background: #E53E3E; }
-    .toast.success { background: #38A169; }
+    <!-- Premium Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/frontend/components/css/sidebar.css" />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8fafc;
+      }
+      h1,
+      h2,
+      h3,
+      .font-display {
+        font-family: "Outfit", sans-serif;
+      }
 
-    @keyframes slideIn {
-      from { transform: translateY(1rem); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-  </style>
-</head>
-<body class="min-h-screen flex w-full text-slate-700">
+      /* Premium card & modal structures */
+      .premium-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        box-shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.02),
+          0 2px 4px -1px rgba(0, 0, 0, 0.01);
+      }
+      .modal-backdrop {
+        background-color: rgba(15, 23, 42, 0.3);
+        backdrop-filter: blur(4px);
+      }
 
-  <!-- Sidebar Component -->
-  <aside class="canva-sidebar w-64 min-h-screen flex-shrink-0 border-r border-slate-200 bg-white flex flex-col justify-between">
-    <div id="sidebar"></div>  
-  </aside>
+      /* Floating feedback notifications */
+      .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        padding: 0.75rem 1.5rem;
+        background: #333;
+        color: #fff;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        z-index: 2000;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        animation: slideIn 0.2s ease-out;
+      }
+      .toast.error {
+        background: #e53e3e;
+      }
+      .toast.success {
+        background: #38a169;
+      }
 
-  <!-- Main Viewport Container -->
-  <div class="flex-1 flex flex-col min-w-0">
-    
-    <!-- Topbar Component -->
-    <header class="border-b border-slate-200 bg-white px-8 py-5 flex items-center justify-between">
-      <div class="flex flex-col">
-        <h2 class="font-bold text-2xl text-slate-900">Fleet Management</h2>
-        <p class="text-xs text-slate-400 mt-0.5">Control hub to track heavy duty trucks, load parameters, and preventative maintenance</p>
-      </div>
-      <div class="flex items-center gap-4">
-        <!-- Date Badge -->
-        <span class="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-full font-medium">
-          <i data-lucide="calendar" class="w-4 h-4 text-slate-500"></i>
-          12 Jul 2026
-        </span>
-        <!-- User Badge -->
-        <div class="flex items-center gap-2 pl-3 border-l border-slate-200">
-          <div id="user-badge" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm border border-slate-200">OP</div>
+      @keyframes slideIn {
+        from {
+          transform: translateY(1rem);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen flex w-full text-slate-700">
+    <!-- Sidebar Component -->
+    <aside
+      class="canva-sidebar w-64 min-h-screen flex-shrink-0 border-r border-slate-200 bg-white flex flex-col justify-between"
+    >
+      <div id="sidebar"></div>
+    </aside>
+
+    <!-- Main Viewport Container -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <!-- Topbar Component -->
+      <header
+        class="border-b border-slate-200 bg-white px-8 py-5 flex items-center justify-between"
+      >
+        <div class="flex flex-col">
+          <h2 class="font-bold text-2xl text-slate-900">Fleet Management</h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Control hub to track heavy duty trucks, load parameters, and
+            preventative maintenance
+          </p>
         </div>
-      </div>
-    </header>
-
-    <!-- Scrollable main workspace -->
-    <main class="flex-1 p-8 space-y-8 overflow-y-auto">
-
-      <!-- Fleet Metrics Section -->
-      <section class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="premium-card p-6 flex items-center justify-between">
-          <div>
-            <span class="text-xs font-semibold uppercase text-slate-400">Total Vehicles</span>
-            <p id="total-vehicles-stat" class="text-3xl font-bold text-slate-900 mt-1">--</p>
-          </div>
-          <div class="w-12 h-12 bg-sky-50 rounded-xl flex items-center justify-center text-sky-600">
-            <i data-lucide="truck" class="w-6 h-6"></i>
-          </div>
-        </div>
-        <div class="premium-card p-6 flex items-center justify-between">
-          <div>
-            <span class="text-xs font-semibold uppercase text-slate-400">Available</span>
-            <p id="available-vehicles-stat" class="text-3xl font-bold text-slate-900 mt-1">--</p>
-          </div>
-          <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
-            <i data-lucide="gauge" class="w-6 h-6 animate-pulse"></i>
-          </div>
-        </div>
-        <div class="premium-card p-6 flex items-center justify-between">
-          <div>
-            <span class="text-xs font-semibold uppercase text-slate-400">On Trip</span>
-            <p id="ontrip-vehicles-stat" class="text-3xl font-bold text-slate-900 mt-1">--</p>
-          </div>
-          <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-500">
-            <i data-lucide="wrench" class="w-6 h-6"></i>
-          </div>
-        </div>
-        <div class="premium-card p-6 flex items-center justify-between">
-          <div>
-            <span class="text-xs font-semibold uppercase text-slate-400">In Shop</span>
-            <p id="inshop-vehicles-stat" class="text-3xl font-bold text-slate-900 mt-1">--</p>
-          </div>
-          <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600">
-            <i data-lucide="leaf" class="w-6 h-6"></i>
-          </div>
-        </div>
-      </section>
-
-      <!-- Main Directory Section -->
-      <section class="premium-card p-6">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <!-- Search inputs and Filter buttons -->
-          <div class="flex flex-1 flex-col sm:flex-row gap-3">
-            <div class="relative flex-1 max-w-md">
-              <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                <i data-lucide="search" class="w-4 h-4"></i>
-              </span>
-              <input id="vehicle-search" type="text" placeholder="Search by Registration No. Model or Type..." class="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-sky-500 focus:bg-white" />
+        <div class="flex items-center gap-4">
+          <!-- Date Badge -->
+          <span
+            class="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-full font-medium"
+          >
+            <i data-lucide="calendar" class="w-4 h-4 text-slate-500"></i>
+            12 Jul 2026
+          </span>
+          <!-- User Badge -->
+          <div class="flex items-center gap-2 pl-3 border-l border-slate-200">
+            <div
+              id="user-badge"
+              class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm border border-slate-200"
+            >
+              OP
             </div>
-            
-            
-
-            <select id="status-filter" class="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-600 focus:outline-none focus:border-sky-500">
-              <option value="ALL">All Status</option>
-              <option value="Available">Available</option>
-              <option value="On Trip">On Trip</option>
-              <option value="In Shop">In Shop</option>
-              <option value="Retired">Retired</option>
-            </select>
           </div>
-          
-          <!-- Call to Action -->
-          <button id="add-vehicle-btn" class="bg-gradient-to-r from-sky-600 to-emerald-500 text-white font-semibold text-sm px-4 py-2.5 rounded-full hover:opacity-90 flex items-center justify-center gap-2 shadow-sm transition-all">
-            <i data-lucide="plus" class="w-4 h-4"></i> Add Transport Vehicle
+        </div>
+      </header>
+
+      <!-- Scrollable main workspace -->
+      <main class="flex-1 p-8 space-y-8 overflow-y-auto">
+        <!-- Fleet Metrics Section -->
+        <section class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="premium-card p-6 flex items-center justify-between">
+            <div>
+              <span class="text-xs font-semibold uppercase text-slate-400"
+                >Total Vehicles</span
+              >
+              <p
+                id="total-vehicles-stat"
+                class="text-3xl font-bold text-slate-900 mt-1"
+              >
+                --
+              </p>
+            </div>
+            <div
+              class="w-12 h-12 bg-sky-50 rounded-xl flex items-center justify-center text-sky-600"
+            >
+              <i data-lucide="truck" class="w-6 h-6"></i>
+            </div>
+          </div>
+          <div class="premium-card p-6 flex items-center justify-between">
+            <div>
+              <span class="text-xs font-semibold uppercase text-slate-400"
+                >Available</span
+              >
+              <p
+                id="available-vehicles-stat"
+                class="text-3xl font-bold text-slate-900 mt-1"
+              >
+                --
+              </p>
+            </div>
+            <div
+              class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600"
+            >
+              <i data-lucide="gauge" class="w-6 h-6 animate-pulse"></i>
+            </div>
+          </div>
+          <div class="premium-card p-6 flex items-center justify-between">
+            <div>
+              <span class="text-xs font-semibold uppercase text-slate-400"
+                >On Trip</span
+              >
+              <p
+                id="ontrip-vehicles-stat"
+                class="text-3xl font-bold text-slate-900 mt-1"
+              >
+                --
+              </p>
+            </div>
+            <div
+              class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-500"
+            >
+              <i data-lucide="wrench" class="w-6 h-6"></i>
+            </div>
+          </div>
+          <div class="premium-card p-6 flex items-center justify-between">
+            <div>
+              <span class="text-xs font-semibold uppercase text-slate-400"
+                >In Shop</span
+              >
+              <p
+                id="inshop-vehicles-stat"
+                class="text-3xl font-bold text-slate-900 mt-1"
+              >
+                --
+              </p>
+            </div>
+            <div
+              class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600"
+            >
+              <i data-lucide="leaf" class="w-6 h-6"></i>
+            </div>
+          </div>
+        </section>
+
+        <!-- Main Directory Section -->
+        <section class="premium-card p-6">
+          <div
+            class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6"
+          >
+            <!-- Search inputs and Filter buttons -->
+            <div class="flex flex-1 flex-col sm:flex-row gap-3">
+              <div class="relative flex-1 max-w-md">
+                <span
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"
+                >
+                  <i data-lucide="search" class="w-4 h-4"></i>
+                </span>
+                <input
+                  id="vehicle-search"
+                  type="text"
+                  placeholder="Search by Registration No. Model or Type..."
+                  class="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-sky-500 focus:bg-white"
+                />
+              </div>
+
+              <select
+                id="status-filter"
+                class="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-600 focus:outline-none focus:border-sky-500"
+              >
+                <option value="ALL">All Status</option>
+                <option value="Available">Available</option>
+                <option value="On Trip">On Trip</option>
+                <option value="In Shop">In Shop</option>
+                <option value="Retired">Retired</option>
+              </select>
+            </div>
+
+            <!-- Call to Action -->
+            <button
+              id="add-vehicle-btn"
+              class="bg-gradient-to-r from-sky-600 to-emerald-500 text-white font-semibold text-sm px-4 py-2.5 rounded-full hover:opacity-90 flex items-center justify-center gap-2 shadow-sm transition-all"
+            >
+              <i data-lucide="plus" class="w-4 h-4"></i> Add Transport Vehicle
+            </button>
+          </div>
+
+          <!-- Directory Table Structure -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-slate-600">
+              <thead
+                class="text-xs uppercase text-slate-400 tracking-wider bg-slate-50"
+              >
+                <tr>
+                  <th class="py-3 px-6">Registration No.</th>
+
+                  <th class="px-6">Vehicle Model</th>
+
+                  <th class="px-6">Vehicle Type</th>
+
+                  <th class="px-6">Max Load (Kg)</th>
+
+                  <th class="px-6">Acquisition Cost</th>
+
+                  <th class="px-6">Status</th>
+
+                  <th class="px-6 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="vehicles-table-body" class="divide-y divide-slate-100">
+                <!-- Dynamically rendered rows -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ADD / EDIT VEHICLE DIALOG MODAL -->
+    <div
+      id="vehicle-modal"
+      class="fixed inset-0 z-50 hidden flex items-center justify-center"
+    >
+      <!-- Backdrop overlay -->
+      <div class="fixed inset-0 modal-backdrop"></div>
+
+      <!-- Modal container block -->
+      <div
+        class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 relative z-10 mx-4 transform scale-95 transition-all duration-150 shadow-2xl"
+      >
+        <div class="flex items-center justify-between mb-6">
+          <h3 id="modal-title" class="text-xl font-bold text-slate-900">
+            Add Transport Vehicle
+          </h3>
+          <button
+            id="close-modal-btn"
+            class="p-1 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-600"
+          >
+            <i data-lucide="x" class="w-5 h-5"></i>
           </button>
         </div>
 
-        <!-- Directory Table Structure -->
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm text-left text-slate-600">
-            <thead class="text-xs uppercase text-slate-400 tracking-wider bg-slate-50">
-            <tr>
+        <form id="vehicle-form" class="space-y-4">
+          <input type="hidden" id="form-vehicle-id" />
 
-            <th class="py-3 px-6">
-            Registration No.
-            </th>
+          <div>
+            <label
+              class="block text-xs font-semibold uppercase text-slate-400 mb-1"
+            >
+              Registration Number
+            </label>
 
-            <th class="px-6">
-            Vehicle Model
-            </th>
+            <input
+              id="form-reg-number"
+              placeholder="AA 11 BB 1111"
+              type="text"
+              required
+              class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg"
+            />
+          </div>
 
-            <th class="px-6">
-            Vehicle Type
-            </th>
+          <div>
+            <label
+              class="block text-xs font-semibold uppercase text-slate-400 mb-1"
+            >
+              Vehicle Model
+            </label>
 
-            <th class="px-6">
-            Max Load (Kg)
-            </th>
+            <input
+              id="form-model"
+              placeholder="Tata Nexon XZ+"
+              type="text"
+              required
+              class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg"
+            />
+          </div>
 
-            <th class="px-6">
-            Acquisition Cost
-            </th>
+          <div>
+            <label
+              class="block text-xs font-semibold uppercase text-slate-400 mb-1"
+              for="form-type"
+            >
+              Vehicle Type
+            </label>
 
-            <th class="px-6">
-            Status
-            </th>
+            <select
+              id="form-type"
+              required
+              class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg appearance-none text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+            >
+              <option value="" disabled selected hidden>
+                Select a type...
+              </option>
+              <option value="Van">Van</option>
+              <option value="Truck">Truck</option>
+              <option value="Mini">Mini</option>
+            </select>
+          </div>
 
-            <th class="px-6 text-center">
-            Actions
-            </th>
+          <div>
+            <label
+              class="block text-xs font-semibold uppercase text-slate-400 mb-1"
+            >
+              Maximum Load (KG)
+            </label>
 
-            </tr>
-            </thead>
-            <tbody id="vehicles-table-body" class="divide-y divide-slate-100">
-              <!-- Dynamically rendered rows -->
-            </tbody>
-          </table>
-        </div>
-      </section>
+            <input
+              id="form-max-load"
+              placeholder="10Kg"
+              type="number"
+              required
+              class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg"
+            />
+          </div>
 
-    </main>
-  </div>
+          <div>
+            <label
+              class="block text-xs font-semibold uppercase text-slate-400 mb-1"
+            >
+              Acquisition Cost
+            </label>
 
-  <!-- ADD / EDIT VEHICLE DIALOG MODAL -->
-  <div id="vehicle-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
-    <!-- Backdrop overlay -->
-    <div class="fixed inset-0 modal-backdrop"></div>
-    
-    <!-- Modal container block -->
-    <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 relative z-10 mx-4 transform scale-95 transition-all duration-150 shadow-2xl">
-      <div class="flex items-center justify-between mb-6">
-        <h3 id="modal-title" class="text-xl font-bold text-slate-900">Add Transport Vehicle</h3>
-        <button id="close-modal-btn" class="p-1 rounded-lg text-slate-400 hover:bg-slate-50 hover:text-slate-600">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+            <input
+              id="form-acquisition-cost"
+              placeholder="₹50000"
+              type="number"
+              required
+              class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg"
+            />
+          </div>
+
+          <div class="pt-4 border-t border-slate-100 flex justify-end gap-3">
+            <button
+              type="button"
+              id="cancel-modal-btn"
+              class="px-4 py-2 border rounded-full"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              class="px-5 py-2 bg-gradient-to-r from-sky-600 to-emerald-500 text-white rounded-full"
+            >
+              Save Vehicle
+            </button>
+          </div>
+        </form>
       </div>
-
-     <form id="vehicle-form" class="space-y-4">
-
-    <input type="hidden" id="form-vehicle-id">
-
-    <div>
-
-    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">
-    Registration Number
-    </label>
-
-    <input
-    id="form-reg-number"
-    placeholder="AA 11 BB 1111"
-    type="text"
-    required
-    class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg">
-
     </div>
 
-    <div>
-
-    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">
-    Vehicle Model
-    </label>
-
-    <input
-    id="form-model"
-    placeholder="Tata Nexon XZ+"
-    type="text"
-    required
-    class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg">
-
-    </div>
-
-    <div>
-
-    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1" for="form-type">
-    Vehicle Type
-</label>
-
-<select
-    id="form-type"
-    required
-    class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg appearance-none text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
-    <option value="" disabled selected hidden>Select a type...</option>
-    <option value="Van">Van</option>
-    <option value="Truck">Truck</option>
-    <option value="Mini">Mini</option>
-</select>
-
-    </div>
-
-    <div>
-
-    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">
-    Maximum Load (KG)
-    </label>
-
-    <input
-    id="form-max-load"
-    placeholder="10Kg"
-    type="number"
-    required
-    class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg">
-
-    </div>
-
-    <div>
-
-    <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">
-    Acquisition Cost
-    </label>
-
-    <input
-    id="form-acquisition-cost"
-    placeholder="₹50000"
-    type="number"
-    required
-    class="w-full px-4 py-2.5 bg-slate-50 border rounded-lg">
-
-    </div>
-
-    <div class="pt-4 border-t border-slate-100 flex justify-end gap-3">
-
-    <button
-    type="button"
-    id="cancel-modal-btn"
-    class="px-4 py-2 border rounded-full">
-
-    Cancel
-
-    </button>
-
-    <button
-    type="submit"
-    class="px-5 py-2 bg-gradient-to-r from-sky-600 to-emerald-500 text-white rounded-full">
-
-    Save Vehicle
-
-    </button>
-
-    </div>
-
-    </form>
-    </div>
-  </div>
-
-  <script src="/frontend/staticFiles/script.js"></script>
-  <script src="/frontend/staticFiles/vehicle.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded',async ()=>{
-       await loading();
-       await loadVehicles();
-       lucide.createIcons();
-    });
-
-  </script>
-</body>
+    <script src="/frontend/staticFiles/script.js"></script>
+    <script src="/frontend/staticFiles/vehicle.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        await loading();
+        await loadVehicles();
+        lucide.createIcons();
+      });
+    </script>
+  </body>
 </html>

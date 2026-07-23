@@ -282,6 +282,36 @@ class FuelResponse(BaseModel):
     )
 
 
+class ExpenseCreate(BaseModel):
+    vehicle_id: int
+    trip_id: Optional[str] = None
+    expense_type: str
+    amount: float
+    date: date
+
+class ExpenseUpdate(BaseModel):
+    vehicle_id: int
+    trip_id: Optional[str] = None
+    expense_type: str
+    amount: float
+    date: date
+    
+class ExpenseResponse(BaseModel):
+    expense_id: int
+
+    vehicle_id: int
+    vehicle: str
+    name_model: str
+
+    trip_id: Optional[str] = None
+
+    expense_type: str
+    amount: float
+    date: date
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 # --- AUTHENTICATION MODELS ---
 
 
